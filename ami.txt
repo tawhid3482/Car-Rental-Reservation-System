@@ -1,0 +1,1 @@
+DATABASE_URL=mongodb+srv://Car-Rental-Reservation-System:Car-Rental23@cluster0.s64u1mi.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
