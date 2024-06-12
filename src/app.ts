@@ -5,6 +5,7 @@
 
 import express, { Application } from 'express';
 import router from './app/routes';
+import globalErrorHandler from './app/middlewares/globalErrorhandler';
 
 const app: Application = express();
 
