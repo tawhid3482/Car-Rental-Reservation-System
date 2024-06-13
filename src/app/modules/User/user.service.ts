@@ -5,7 +5,7 @@ import AppError from '../../errors/AppError';
 import { TUser } from './user.interface';
 import { UserModel } from './user.model';
 
-const createUser = async (userData: TUser): Promise<TUser> => {
+const createUserIntoDB = async (userData: TUser): Promise<TUser> => {
   try {
     const user = new UserModel(userData);
     await user.save();
@@ -79,7 +79,7 @@ const updateUserAddress = async (userId: string, newAddress: string): Promise<TU
 };
 
 export const UserService = {
-  createUser,
+  createUserIntoDB,
   getUserById,
   getUserByEmail,
   updateUser,
