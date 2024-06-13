@@ -1,16 +1,32 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import httpStatus from 'http-status';
-import mongoose from 'mongoose';
-import AppError from '../../errors/AppError';
-import { TUser } from './user.interface';
-import { UserModel } from './user.model';
+import httpStatus from "http-status";
+import mongoose from "mongoose";
+import AppError from "../../errors/AppError";
+import { TUser } from "./user.interface";
+import { UserModel } from "./user.model";
+import config from "../../config";
 
-const createUserIntoDB = async (userData: TUser): Promise<TUser> => {
+const createUserIntoDB = async (password: string, payload: TUser): Promise<TUser> => {
+  // create a user object
+  const userData: Partial<TUser> = {};
+
+  const session = await mongoose.startSession();
+
   try {
-    const user = new UserModel(userData);
-    await user.save();
-    return user.toObject();
+    session.startTransaction();
+    const newUser = await UserModel.create([userData], { session });
+
+    if (!newUser.length) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Failed to create user");
+    }
+
+    await session.commitTransaction();
+    await session.endSession();
+
+    return newUser[0].toObject();
   } catch (err: any) {
+    await session.abortTransaction();
+    await session.endSession();
     throw new AppError(httpStatus.BAD_REQUEST, err.message);
   }
 };
