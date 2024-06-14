@@ -3,7 +3,7 @@ import sendResponse from '../../utils/sendResponse';
 import httpStatus from 'http-status';
 import catchAsync from '../../utils/catchAsync';
 import { UserService } from './user.service';
-import { userValidationSchema } from './user.validation';
+import { signInValidationSchema, userValidationSchema } from './user.validation';
 
 const createUserController = catchAsync(async (req: Request, res: Response) => {
   // Validate request body
@@ -22,6 +22,9 @@ const createUserController = catchAsync(async (req: Request, res: Response) => {
 });
 
 const signInUserController = catchAsync(async (req: Request, res: Response) => {
+  // Validate request body
+  signInValidationSchema.parse(req.body);
+
   const { email, password } = req.body;
 
   const result = await UserService.signInUserIntoDB(email, password);

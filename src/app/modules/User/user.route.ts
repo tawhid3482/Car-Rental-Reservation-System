@@ -2,19 +2,8 @@ import express from "express";
 import { UserController } from "./user.controller";
 
 const router = express.Router();
-router.post(
-  "/signup",
-  // auth(USER_ROLE.admin),
-  // validateRequest(createStudentValidationSchema),
-  UserController.createUserController
-);
-router.post(
-  "/signin",
-  // auth(USER_ROLE.admin),
-  // validateRequest(createStudentValidationSchema),
-  UserController.createUserController
-);
 
-// router.get("/signup", UserController.getUser);
+router.post("/signup", UserController.createUserController);
+router.post("/signin", UserController.signInUserController);
 
 export const UserRoutes = router;
