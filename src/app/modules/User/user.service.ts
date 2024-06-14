@@ -54,6 +54,7 @@ const signInUserIntoDB = async (email: string, password: string) => {
 
   return { user, token };
 };
+
 export const UserService = {
   createUserIntoDB,
   signInUserIntoDB
