@@ -6,15 +6,15 @@ router.post(
   "/signup",
   // auth(USER_ROLE.admin),
   // validateRequest(createStudentValidationSchema),
-  UserController.createUser
+  UserController.createUserController
 );
 router.post(
   "/signin",
   // auth(USER_ROLE.admin),
   // validateRequest(createStudentValidationSchema),
-  UserController.createUser
+  UserController.createUserController
 );
 
-router.get("/signup", UserController.createUser);
+// router.get("/signup", UserController.getUser);
 
 export const UserRoutes = router;

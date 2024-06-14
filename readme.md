@@ -1,88 +1,39 @@
-const getUserById = async (userId: string): Promise<TUser | null> => {
-  try {
-    const user = await UserModel.findById(userId).exec();
-    return user ? user.toObject() : null;
-  } catch (err: any) {
-    throw new AppError(httpStatus.BAD_REQUEST, err.message);
-  }
-};
+import { Request, Response } from 'express';
+import sendResponse from '../../utils/sendResponse';
+import httpStatus from 'http-status';
+import catchAsync from '../../utils/catchAsync';
+import { UserService } from './user.service';
 
-const getUserByEmail = async (email: string): Promise<TUser | null> => {
-  try {
-    const user = await UserModel.findOne({ email }).exec();
-    return user ? user.toObject() : null;
-  } catch (err: any) {
-    throw new AppError(httpStatus.BAD_REQUEST, err.message);
-  }
-};
+const createUserController = catchAsync(async (req: Request, res: Response) => {
+  const userData = req.body;
 
-const updateUser = async (
-  userId: string,
-  updateData: Partial<TUser>
-): Promise<TUser | null> => {
-  try {
-    const user = await UserModel.findByIdAndUpdate(userId, updateData, {
-      new: true,
-    }).exec();
-    return user ? user.toObject() : null;
-  } catch (err: any) {
-    throw new AppError(httpStatus.BAD_REQUEST, err.message);
-  }
-};
+  const result = await UserService.createUserIntoDB(userData);
 
-const deleteUser = async (userId: string): Promise<TUser | null> => {
-  try {
-    const user = await UserModel.findByIdAndDelete(userId).exec();
-    return user ? user.toObject() : null;
-  } catch (err: any) {
-    throw new AppError(httpStatus.BAD_REQUEST, err.message);
-  }
-};
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User registered successfully',
+    data: result,
+  });
+});
 
-const changeUserRole = async (
-  userId: string,
-  newRole: "user" | "admin"
-): Promise<TUser | null> => {
-  try {
-    const user = await UserModel.findByIdAndUpdate(
-      userId,
-      { role: newRole },
-      { new: true }
-    ).exec();
-    return user ? user.toObject() : null;
-  } catch (err: any) {
-    throw new AppError(httpStatus.BAD_REQUEST, err.message);
-  }
-};
 
-const updateUserPassword = async (
-  userId: string,
-  newPassword: string
-): Promise<TUser | null> => {
-  try {
-    const user = await UserModel.findByIdAndUpdate(
-      userId,
-      { password: newPassword },
-      { new: true }
-    ).exec();
-    return user ? user.toObject() : null;
-  } catch (err: any) {
-    throw new AppError(httpStatus.BAD_REQUEST, err.message);
-  }
-};
+const singInUserController = catchAsync(async (req: Request, res: Response) => {
+  const userData = req.body;
 
-const updateUserAddress = async (
-  userId: string,
-  newAddress: string
-): Promise<TUser | null> => {
-  try {
-    const user = await UserModel.findByIdAndUpdate(
-      userId,
-      { address: newAddress },
-      { new: true }
-    ).exec();
-    return user ? user.toObject() : null;
-  } catch (err: any) {
-    throw new AppError(httpStatus.BAD_REQUEST, err.message);
-  }
+  const result = await UserService.signInUserIntoDB(userData);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User registered successfully',
+    data: result,
+  });
+});
+
+
+
+export const UserController = {
+  createUserController,
+  singInUserController
 };

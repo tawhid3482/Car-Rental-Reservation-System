@@ -1,24 +1,25 @@
-import { Schema, model } from "mongoose";
-import { TUser } from "./user.interface";
+// user.model.ts
+import { Schema, model, Document } from 'mongoose';
+import { TUser } from './user.interface';
+import { USER_ROLE } from './user.constant';
 
-const userSchema = new Schema<TUser>({
+interface TUserDocument extends TUser, Document {}
+
+const userSchema = new Schema<TUserDocument>({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   role: {
     type: String,
-    enum: ["user", "admin"],
+    enum: Object.values(USER_ROLE), 
     required: true,
   },
-  password: {
-    type: String,
-    required: true,
-    select: false, // Note that the correct option is 'false' instead of '0'
-  },
+  password: { type: String, required: true, select: false },
   phone: { type: String, required: true },
   address: { type: String, required: true },
 }, {
-  timestamps: true // This adds createdAt and updatedAt timestamps
+  timestamps: true,
 });
 
-// Export the model
-export const UserModel = model<TUser>('User', userSchema);
+export const UserModel = model<TUserDocument>('User', userSchema);
+
+
