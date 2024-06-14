@@ -8,14 +8,16 @@ import AppError from "../../errors/AppError";
 import httpStatus from "http-status";
 
 const createUserIntoDB = async (payload: TUser) => {
-  const userData: TUser = { ...payload, password: payload.password || (config.default_password as string) };
+  // Hash the password
+  const hashedPassword = await bcrypt.hash(payload.password, 10);
+  const userData: TUser = { ...payload, password: hashedPassword };
 
   const session = await mongoose.startSession();
 
   try {
     session.startTransaction();
 
-    // create a user (transaction-1)
+    // Create a user (transaction-1)
     const newUser = await UserModel.create([userData], { session }); // array
 
     if (!newUser.length) {
@@ -33,12 +35,13 @@ const createUserIntoDB = async (payload: TUser) => {
 };
 
 const signInUserIntoDB = async (email: string, password: string) => {
-  const user = await UserModel.findOne({ email }).select('+password');
+  const user = await UserModel.findOne({ email }).select("+password");
 
   if (!user) {
     throw new AppError(httpStatus.UNAUTHORIZED, "Invalid email or password");
   }
 
+  // Compare the provided password with the hashed password in the database
   const isPasswordMatch = await bcrypt.compare(password, user.password);
 
   if (!isPasswordMatch) {
@@ -49,7 +52,7 @@ const signInUserIntoDB = async (email: string, password: string) => {
   const token = jwt.sign(
     { id: user._id, email: user.email, role: user.role },
     config.jwt_access_secret as string,
-    { expiresIn: '1h' }
+    { expiresIn: "1h" }
   );
 
   return { user, token };
@@ -57,5 +60,5 @@ const signInUserIntoDB = async (email: string, password: string) => {
 
 export const UserService = {
   createUserIntoDB,
-  signInUserIntoDB
+  signInUserIntoDB,
 };
