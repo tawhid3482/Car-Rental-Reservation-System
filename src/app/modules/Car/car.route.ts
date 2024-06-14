@@ -2,6 +2,6 @@ import express from "express";
 
 const router = express.Router();
 
-router.post("/", UserController.createUserController);
+router.post("/", CarController.createCarController);
 
 export const CarRoutes = router;
