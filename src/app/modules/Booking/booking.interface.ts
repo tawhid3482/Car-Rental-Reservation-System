@@ -1,5 +1,3 @@
-// interface.ts
-
 export interface TBooking {
     date: Date;
     user: string; // Reference to user model

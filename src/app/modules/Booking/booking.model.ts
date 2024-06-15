@@ -1,35 +1,21 @@
-// model.ts
+import mongoose, { Schema, Document, Model } from 'mongoose';
+import { TBooking } from './booking.interface';
 
-import { TBooking } from "./booking.interface";
+// Create a schema corresponding to the document interface.
+const bookingSchema: Schema = new Schema({
+  date: { type: Date, required: true },
+  user: { type: String, required: true, ref: 'User' }, // Assuming User is another model
+  car: { type: String, required: true, ref: 'Car' }, // Assuming Car is another model
+  startTime: { type: String, required: true },
+  endTime: { type: String, required: true },
+  totalCost: { type: Number, required: true },
+  isDeleted: { type: Boolean, default: false },
+});
 
-class Booking implements TBooking {
-    date: Date;
-    user: string;
-    car: string;
-    startTime: string;
-    endTime: string;
-    totalCost: number;
+// Define a Mongoose document based on the TBooking interface
+export interface IBooking extends TBooking, Document {}
 
-    constructor(date: Date, user: string, car: string, startTime: string, endTime: string, pricePerHour: number) {
-        this.date = date;
-        this.user = user;
-        this.car = car;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.totalCost = this.calculateTotalCost(startTime, endTime, pricePerHour);
-    }
+// Create the model using the schema
+const BookingModel: Model<IBooking> = mongoose.model<IBooking>('Booking', bookingSchema);
 
-    private calculateTotalCost(startTime: string, endTime: string, pricePerHour: number): number {
-        const start = this.convertToMinutes(startTime);
-        const end = this.convertToMinutes(endTime);
-        const duration = (end - start) / 60; // Convert minutes to hours
-        return duration * pricePerHour;
-    }
-
-    private convertToMinutes(time: string): number {
-        const [hours, minutes] = time.split(':').map(Number);
-        return hours * 60 + minutes;
-    }
-}
-
-export { Booking };
+export { BookingModel };
