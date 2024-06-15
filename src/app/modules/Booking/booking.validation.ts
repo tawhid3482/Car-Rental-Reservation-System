@@ -15,7 +15,17 @@ const bookingSchema = z.object({
   totalCost: z.number().nonnegative(),
 });
 
+// Define the Zod schema for updating Booking (partial update)
+const bookingUpdateValidationSchema = z.object({
+  date: z.date().optional(),
+  user: z.string().optional(),
+  car: z.string().optional(),
+  startTime: timeSchema.optional(),
+  endTime: timeSchema.optional(),
+  totalCost: z.number().nonnegative().optional(),
+});
+
 // Type inference for Booking
 type Booking = z.infer<typeof bookingSchema>;
 
-export { bookingSchema, Booking };
+export { bookingSchema, bookingUpdateValidationSchema, Booking };
