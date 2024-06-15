@@ -5,4 +5,6 @@ const router = express.Router();
 
 router.post("/", carController.createCarController);
 
+router.get("/", carController.createCarController);
+
 export const CarRoutes = router;
