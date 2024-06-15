@@ -15,7 +15,12 @@ const getSingleCarFromDB = async (id: string) => {
 };
 
 const updateCarIntoDB = async (id: string, updateData: TCar) => {
-  const result = await CarModel.updateOne({_id: id }, { $set: updateData });
+  const result = await CarModel.updateOne({ _id: id }, { $set: updateData });
+  return result;
+};
+
+const deleteSingleCarFromDB = async (id: string) => {
+  const result = await CarModel.updateOne({ _id: id }, { $set: { isDeleted: true } });
   return result;
 };
 
@@ -24,4 +29,5 @@ export const carServices = {
   getAllCarFromDB,
   getSingleCarFromDB,
   updateCarIntoDB,
+  deleteSingleCarFromDB
 };

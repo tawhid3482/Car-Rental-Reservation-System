@@ -69,26 +69,33 @@ const updateSingleCar = catchAsync(async (req, res) => {
 });
 
 const deleteSingleCar = catchAsync(async (req, res) => {
-  try {
     const { id } = req.params;
-
-    const result = await productServices.deleteSingleProductDB(productId);
-    res.status(200).json({
-      success: true,
-      message: "Product deleted successfully",
-      data: result,
-    });
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: "Product not deleted",
-    });
-  }
-});
+    const deleteResult = await carServices.deleteSingleCarFromDB(id);
+  
+    if (deleteResult.modifiedCount === 1) {
+      const deletedCar = await carServices.getSingleCarFromDB(id);
+  
+      sendResponse({
+        res,
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Car deleted successfully",
+        data: deletedCar,
+      });
+    } else {
+      sendResponse({
+        res,
+        statusCode: httpStatus.NOT_FOUND,
+        success: false,
+        message: "Car not found",
+      });
+    }
+  });
 
 export const carController = {
   createCarController,
   getAllCars,
   getSingleCars,
   updateSingleCar,
+  deleteSingleCar,
 };
