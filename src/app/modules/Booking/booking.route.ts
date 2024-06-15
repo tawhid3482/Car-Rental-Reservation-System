@@ -5,9 +5,10 @@ import { bookingController } from './booking.controller';
 
 const router = Router();
 
-router.post('/', bookingController.createBooking);
-router.get('/', bookingController.getBookings);
-router.get('/:id', bookingController.getBookingById);
-router.delete('/:id', bookingController.deleteBooking);
+router.post('/', bookingController.createBookingController);
+router.get('/', bookingController.getAllBookings);
+router.get('/:id', bookingController.getSingleBooking);
+router.put('/:id', bookingController.updateSingleBooking);
+router.delete('/:id', bookingController.deleteSingleBooking);
 
 export const BookingRoutes = router;

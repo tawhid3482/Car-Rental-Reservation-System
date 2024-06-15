@@ -2,6 +2,7 @@ import httpStatus from "http-status";
 import catchAsync from "../../utils/catchAsync";
 import { bookingServices } from "./booking.service";
 import sendResponse from "../../utils/sendResponse";
+import { bookingUpdateValidationSchema } from "./booking.validation";
 
 const createBookingController = catchAsync(async (req, res) => {
   const payload = req.body;
