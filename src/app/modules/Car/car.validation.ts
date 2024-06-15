@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const carValidationSchema = z.object({
+ const carValidationSchema = z.object({
   name: z.string().nonempty({ message: 'Name is required' }),
   description: z.string().nonempty({ message: 'Description is required' }),
   color: z.string().nonempty({ message: 'Color is required' }),
@@ -17,4 +17,8 @@ export const carValidationSchema = z.object({
   }),
 });
 
-export const updateCarValidationSchema = carValidationSchema.partial();
+
+export const carValidation = {
+  carValidationSchema
+}
+

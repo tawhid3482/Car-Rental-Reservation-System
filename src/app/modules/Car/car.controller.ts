@@ -3,6 +3,7 @@ import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import { carServices } from "./car.service";
 import { Request, Response } from "express";
+import { carValidation } from "./car.validation";
 
 const createCarController = catchAsync(async (req, res) => {
   const result = await carServices.createCarIntoDB(req.body);
@@ -37,6 +38,18 @@ const getSingleCars = catchAsync(async (req, res) => {
     data: result,
   });
 });
+
+const updateSingleCar = catchAsync(async(req,res)=>{
+    const { id } = req.params;
+    const updateData = req.body;
+    const zodParsedData = carValidation.carValidationSchema.parse(updateData);
+
+    const result = await carServices.updateCarIntoDB(
+      id,
+      zodParsedData,
+    );
+})
+
 
 export const carController = {
   createCarController,
