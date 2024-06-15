@@ -1,6 +1,6 @@
 // interface.ts
 
-export interface IBooking {
+export interface TBooking {
     date: Date;
     user: string; // Reference to user model
     car: string; // Reference to car model
