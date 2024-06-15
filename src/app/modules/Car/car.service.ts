@@ -15,7 +15,7 @@ const getSingleCarFromDB = async (id: string) => {
 };
 
 const updateCarIntoDB = async (id: string, updateData: TCar) => {
-  const result = await CarModel.updateOne({ id }, { $set: updateData });
+  const result = await CarModel.updateOne({_id: id }, { $set: updateData });
   return result;
 };
 
