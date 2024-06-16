@@ -1,79 +1,66 @@
-import { BookingModel } from "./booking.model";
-import { Booking } from "./model";
-import { UserModel } from "../User/user.model"; // Adjust path as necessary
-import { CarModel } from "../Car/car.model"; // Adjust path as necessary
-import { TBooking } from "./booking.interface";
+import { Types } from 'mongoose';
+import bookingModel, { IBooking } from './booking.model';
+import { validateBooking } from './booking.validation';
 
-const createBookingIntoDB = async (
-  payload: { date: Date, userId: string, carId: string, startTime: string, endTime: string | null, pricePerHour: number }
-) => {
-  const { date, userId, carId, startTime, endTime, pricePerHour } = payload;
-  
-  const bookingInstance = new Booking({
-    date,
-    user: userId,
-    car: carId,
-    startTime,
-    endTime,
-    pricePerHour
-  });
-
-  const createdBooking = await BookingModel.create({
-    date: bookingInstance.date,
-    user: bookingInstance.user,
-    car: bookingInstance.car,
-    startTime: bookingInstance.startTime,
-    endTime: bookingInstance.endTime,
-    totalCost: bookingInstance.totalCost,
-  });
-
-  // Populate user and car data
-  const populatedBooking = await BookingModel.findById(createdBooking._id)
-    .populate('user')
-    .populate('car');
-
-  if (!populatedBooking) {
-    throw new Error('Failed to populate booking details');
+// Create a new booking
+ const createBookingIntoDB = async (bookingData: Partial<IBooking>) => {
+  const validationResult = validateBooking(bookingData);
+  if (!validationResult.success) {
+    throw new Error('Validation failed: ' + validationResult.error.errors.map(err => err.message).join(', '));
   }
 
-  return populatedBooking;
+  const booking = new bookingModel({
+    ...validationResult.data,
+    user: new Types.ObjectId(bookingData.user),
+    car: new Types.ObjectId(bookingData.car),
+  });
+
+  await booking.save();
+  return booking;
 };
 
-const getAllBookingsFromDB = async () => {
-  const result = await BookingModel.find().populate('user').populate('car');
-  return result;
+// Get a booking by ID
+ const getBookingByIdFromDB = async (id: string) => {
+  const booking = await bookingModel.findById(id).populate('user').populate('car');
+  if (!booking) {
+    throw new Error('Booking not found');
+  }
+  return booking;
 };
 
-const getSingleBookingFromDB = async (id: string) => {
-  const result = await BookingModel.findById(id).populate('user').populate('car');
-  return result;
-};
-
-const updateBookingIntoDB = async (
-  id: string,
-  updateData: Partial<TBooking & { pricePerHour?: number }>
-) => {
-  if (updateData.startTime || updateData.endTime || updateData.pricePerHour !== undefined) {
-    const booking = await BookingModel.findById(id);
-    if (!booking) throw new Error("Booking not found");
-    const { date, user, car, startTime, endTime, pricePerHour } = { ...booking.toObject(), ...updateData };
-    const bookingInstance = new Booking({ date, user: user, car: car, startTime, endTime, pricePerHour: pricePerHour || 0 });
-    updateData.totalCost = bookingInstance.totalCost;
+// Update a booking
+ const updateBookingIntoDB = async (id: string, updateData: Partial<IBooking>) => {
+  const validationResult = validateBooking(updateData);
+  if (!validationResult.success) {
+    throw new Error('Validation failed: ' + validationResult.error.errors.map(err => err.message).join(', '));
   }
 
-  const result = await BookingModel.updateOne({ _id: id }, { $set: updateData });
-  return result;
+  const booking = await bookingModel.findByIdAndUpdate(id, validationResult.data, { new: true });
+  if (!booking) {
+    throw new Error('Booking not found');
+  }
+  return booking;
 };
 
-const deleteSingleBookingFromDB = async (id: string) => {
-  const result = await BookingModel.updateOne({ _id: id }, { $set: { isDeleted: true } });
-  return result;
+// Delete a booking
+ const deleteSingleBookingFromDB = async (id: string) => {
+  const booking = await bookingModel.findByIdAndDelete(id);
+  if (!booking) {
+    throw new Error('Booking not found');
+  }
+  return booking;
 };
 
-export const bookingServices = {
+// Get all bookings
+ const getAllBookingsFromDB = async () => {
+  const bookings = await bookingModel.find().populate('user').populate('car');
+  return bookings;
+};
+
+export const BookingServices = {
   createBookingIntoDB,
   getAllBookingsFromDB,
-  getSingleBookingFromDB,
+  getBookingByIdFromDB,
   updateBookingIntoDB,
   deleteSingleBookingFromDB,
-};
+}

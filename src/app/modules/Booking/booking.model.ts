@@ -1,18 +1,63 @@
-import mongoose, { Schema, Document, Model } from 'mongoose';
-import { TBooking } from './booking.interface';
+import mongoose, { Schema, Document } from 'mongoose';
 
-const bookingSchema: Schema = new Schema({
-  date: { type: Date, required: true },
-  user: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User' },
-  car: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'Car' },
-  startTime: { type: String, required: true },
-  endTime: { type: String, default: null },
-  totalCost: { type: Number, required: true, default: 0 },
-  isDeleted: { type: Boolean, default: false },
+// Define the interfaces
+export interface IBooking extends Document {
+  date: Date;
+  user: mongoose.Types.ObjectId;
+  car: mongoose.Types.ObjectId;
+  startTime: string;
+  endTime: string;
+  totalCost: number;
+}
+
+// Define the schema
+const BookingSchema: Schema = new Schema({
+  date: {
+    type: Date,
+    required: true
+  },
+  user: {
+    type: mongoose.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  car: {
+    type: mongoose.Types.ObjectId,
+    ref: 'Car',
+    required: true
+  },
+  startTime: {
+    type: String,
+    required: true
+  },
+  endTime: {
+    type: String,
+    required: true
+  },
+  totalCost: {
+    type: Number,
+    required: true,
+    default: 0
+  }
 });
 
-export interface IBooking extends TBooking, Document {}
+// Pre-save middleware to calculate the totalCost before saving
+BookingSchema.pre<IBooking>('save', function (next) {
+  const booking = this;
+  const startHour = parseInt(booking.startTime.split(':')[0]);
+  const startMinute = parseInt(booking.startTime.split(':')[1]);
+  const endHour = parseInt(booking.endTime.split(':')[0]);
+  const endMinute = parseInt(booking.endTime.split(':')[1]);
 
-const BookingModel: Model<IBooking> = mongoose.model<IBooking>('Booking', bookingSchema);
+  const startTime = startHour + startMinute / 60;
+  const endTime = endHour + endMinute / 60;
 
-export { BookingModel };
+  const duration = endTime - startTime;
+
+  const pricePerHour = 20; // example rate
+
+  booking.totalCost = duration * pricePerHour;
+  next();
+});
+
+export default mongoose.model<IBooking>('Booking', BookingSchema);
