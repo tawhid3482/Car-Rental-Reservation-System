@@ -6,6 +6,8 @@ import { bookingUpdateValidationSchema } from "./booking.validation";
 
 const createBookingController = catchAsync(async (req, res) => {
   const payload = req.body;
+  payload.date = new Date(payload.date); // Convert date string to Date object
+
   const result = await bookingServices.createBookingIntoDB(payload);
   sendResponse({
     res,
