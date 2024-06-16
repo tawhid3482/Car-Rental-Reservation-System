@@ -9,8 +9,6 @@ export interface IBooking extends Document {
   endTime: string;
   totalCost: number;
 }
-
-// Define the schema
 const BookingSchema: Schema = new Schema({
   date: {
     type: Date,
