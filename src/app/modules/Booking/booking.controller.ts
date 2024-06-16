@@ -6,8 +6,6 @@ import { bookingUpdateValidationSchema } from "./booking.validation";
 
 const createBookingController = catchAsync(async (req, res) => {
   const payload = req.body;
-  payload.date = new Date(payload.date); // Convert date string to Date object
-
   const result = await bookingServices.createBookingIntoDB(payload);
   sendResponse({
     res,
@@ -44,14 +42,12 @@ const getSingleBooking = catchAsync(async (req, res) => {
 const updateSingleBooking = catchAsync(async (req, res) => {
   const { id } = req.params;
   const updateData = req.body;
-  const zodParsedData = bookingUpdateValidationSchema.parse(updateData); // Assuming you have a validation schema for updating bookings
+  const zodParsedData = bookingUpdateValidationSchema.parse(updateData);
 
   const updateResult = await bookingServices.updateBookingIntoDB(id, zodParsedData);
 
   if (updateResult.modifiedCount === 1) {
-    // Fetch the updated booking data
     const updatedBooking = await bookingServices.getSingleBookingFromDB(id);
-
     sendResponse({
       res,
       statusCode: httpStatus.OK,
@@ -75,7 +71,6 @@ const deleteSingleBooking = catchAsync(async (req, res) => {
 
   if (deleteResult.modifiedCount === 1) {
     const deletedBooking = await bookingServices.getSingleBookingFromDB(id);
-
     sendResponse({
       res,
       statusCode: httpStatus.OK,

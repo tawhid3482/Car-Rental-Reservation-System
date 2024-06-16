@@ -1,33 +1,34 @@
 import { TBooking } from "./booking.interface";
 import { bookingSchema } from "./booking.validation";
 
-class Booking implements TBooking {
+class Booking implements Omit<TBooking, 'totalCost'> {
   date: Date;
   user: string;
   car: string;
   startTime: string;
-  endTime: string;
+  endTime: string | null;
   totalCost: number;
 
-  constructor(data: Omit<TBooking, 'totalCost'> & { pricePerHour: number, userId: string, carId: string }) {
-    const { date, userId, carId, startTime, endTime, pricePerHour } = data;
+  constructor(data: { date: Date; user: string; car: string; startTime: string; endTime: string | null; pricePerHour: number }) {
+    const { date, user, car, startTime, endTime, pricePerHour } = data;
 
     // Validate data using Zod schema
-    const result = bookingSchema.safeParse({ date, user: userId, car: carId, startTime, endTime, totalCost: 0 });
+    const result = bookingSchema.safeParse({ date, user, car, startTime, endTime, totalCost: 0 });
 
     if (!result.success) {
       throw new Error(`Invalid booking data: ${JSON.stringify(result.error.format())}`);
     }
 
     this.date = date;
-    this.user = userId;
-    this.car = carId;
+    this.user = user;
+    this.car = car;
     this.startTime = startTime;
     this.endTime = endTime;
     this.totalCost = this.calculateTotalCost(startTime, endTime, pricePerHour);
   }
 
-  private calculateTotalCost(startTime: string, endTime: string, pricePerHour: number): number {
+  private calculateTotalCost(startTime: string, endTime: string | null, pricePerHour: number): number {
+    if (endTime === null) return 0;
     const start = this.convertToMinutes(startTime);
     const end = this.convertToMinutes(endTime);
     const duration = (end - start) / 60; // Convert minutes to hours
