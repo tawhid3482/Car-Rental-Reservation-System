@@ -1,6 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
-// Define the interfaces
 export interface IBooking extends Document {
   date: Date;
   user: mongoose.Types.ObjectId;
