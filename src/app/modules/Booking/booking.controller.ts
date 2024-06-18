@@ -1,90 +1,122 @@
 import httpStatus from 'http-status';
+import mongoose from 'mongoose';
 import catchAsync from '../../utils/catchAsync';
+import { validateBooking } from './booking.validation';
 import { BookingServices } from './booking.service';
 import sendResponse from '../../utils/sendResponse';
 
 
 const createBookingController = catchAsync(async (req, res) => {
-  const { carId, date, startTime } = req.body;
-
-  const bookingData = {
-    car: carId,
+  const validatedData = validateBooking.createBookingValidation.parse({ body: req.body });
+  const { date, user, car, startTime, endTime } = validatedData.body;
+  
+  const result = await BookingServices.createBookingIntoDB({
     date,
+    user: new mongoose.Types.ObjectId(user), // Use 'new' keyword here
+    car: new mongoose.Types.ObjectId(car),   // Use 'new' keyword here
     startTime,
-    endTime: req.body.endTime, // Assuming endTime is also in req.body
-    user: req.body.userId // Assuming userId is available in req.body
-  };
-
-  const newBooking = await BookingServices.createBookingIntoDB(bookingData);
+    endTime,
+  });
+  
   sendResponse({
     res,
     statusCode: httpStatus.CREATED,
     success: true,
     message: 'Booking created successfully',
-    data: newBooking,
+    data: result,
   });
 });
 
-const getAllBookingsController = catchAsync(async (req, res) => {
-  const bookings = await BookingServices.getAllBookingsFromDB();
+const getAllBookings = catchAsync(async (req, res) => {
+  const result = await BookingServices.getAllBookingsFromDB(req.query);
   sendResponse({
     res,
     statusCode: httpStatus.OK,
     success: true,
     message: 'Bookings retrieved successfully',
-    data: bookings,
+    data: result,
   });
 });
 
-const getSingleBookingController = catchAsync(async (req, res) => {
+const getSingleBooking = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const booking = await BookingServices.getBookingByIdFromDB(id);
+  const result = await BookingServices.getSingleBookingFromDB(id);
+  if (!result) {
+    sendResponse({
+      res,
+      statusCode: httpStatus.NOT_FOUND,
+      success: false,
+      message: 'Booking not found',
+    });
+    return;
+  }
   sendResponse({
     res,
     statusCode: httpStatus.OK,
     success: true,
     message: 'Booking retrieved successfully',
-    data: booking,
+    data: result,
   });
 });
 
-const updateBookingController = catchAsync(async (req, res) => {
+const updateSingleBooking = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const updateData = {
-    car: req.body.carId,
-    date: req.body.date,
-    startTime: req.body.startTime,
-    endTime: req.body.endTime,
-    user: req.body.userId,
-    totalCost: req.body.totalCost
-  };
+  const updateData = req.body;
+  const validatedData = validateBooking.createBookingValidation.parse({ body: updateData });
+  const { date, user, car, startTime, endTime } = validatedData.body;
 
-  const updatedBooking = await BookingServices.updateBookingIntoDB(id, updateData);
+  const result = await BookingServices.updateBookingIntoDB(id, {
+    date,
+    user: new mongoose.Types.ObjectId(user),
+    car: new mongoose.Types.ObjectId(car),
+    startTime,
+    endTime,
+  });
+
+  if (!result) {
+    sendResponse({
+      res,
+      statusCode: httpStatus.NOT_FOUND,
+      success: false,
+      message: 'Booking not found or data not modified',
+    });
+    return;
+  }
+
   sendResponse({
     res,
     statusCode: httpStatus.OK,
     success: true,
     message: 'Booking updated successfully',
-    data: updatedBooking,
+    data: result,
   });
 });
 
-const deleteBookingController = catchAsync(async (req, res) => {
+const deleteSingleBooking = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const deletedBooking = await BookingServices.deleteSingleBookingFromDB(id);
+  const result = await BookingServices.deleteBookingFromDB(id);
+  if (!result) {
+    sendResponse({
+      res,
+      statusCode: httpStatus.NOT_FOUND,
+      success: false,
+      message: 'Booking not found',
+    });
+    return;
+  }
   sendResponse({
     res,
     statusCode: httpStatus.OK,
     success: true,
     message: 'Booking deleted successfully',
-    data: deletedBooking,
+    data: result,
   });
 });
 
 export const BookingController = {
   createBookingController,
-  getAllBookingsController,
-  getSingleBookingController,
-  updateBookingController,
-  deleteBookingController,
+  getAllBookings,
+  getSingleBooking,
+  updateSingleBooking,
+  deleteSingleBooking,
 };
