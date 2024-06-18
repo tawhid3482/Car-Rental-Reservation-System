@@ -1,7 +1,6 @@
 // routes.ts
 
 import { Router } from 'express';
-import { BookingController } from './booking.controller';
 
 const router = Router();
 
