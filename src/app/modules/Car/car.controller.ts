@@ -1,9 +1,8 @@
 import httpStatus from "http-status";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
-import { carServices } from "./car.service";
-import { Request, Response } from "express";
 import { carValidation } from "./car.validation";
+import { carServices } from "./car.service";
 
 const createCarController = catchAsync(async (req, res) => {
   const result = await carServices.createCarIntoDB(req.body);
