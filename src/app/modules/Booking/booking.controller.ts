@@ -1,25 +1,32 @@
 import httpStatus from "http-status";
 import catchAsync from "../../utils/catchAsync";
-import { validateBooking } from "./booking.validation";
+import { createBookingValidationSchema } from "./booking.validation";
 import { bookingServices } from "./booking.service";
 import sendResponse from "../../utils/sendResponse";
 
 
 const createBookingController = catchAsync(async (req, res) => {
-  const { date, user, car, startTime, endTime } = req.body;
-
-  // Validate the request body
-  const requestBody = validateBooking.createBookingValidationSchema.parse(req.body);
-
   try {
-    // Create the booking
-    const result = await bookingServices.createBookingIntoDB({
+    // Validate the request body
+    const validatedData = createBookingValidationSchema.parse(req.body);
+
+    // Destructure validated data
+    const { carId, date, startTime, endTime } = validatedData;
+
+    // Example: Fetch user from authentication middleware
+    const user = req.user; // Assuming req.user contains authenticated user data
+
+    // Create the booking payload
+    const payload = {
+      user: user._id, // Assuming user._id is the ObjectId of the authenticated user
+      car: carId,
       date,
-      user,
-      car,
       startTime,
       endTime,
-    });
+    };
+
+    // Create the booking
+    const result = await bookingServices.createBookingIntoDB(payload);
 
     sendResponse({
       res,
@@ -28,16 +35,15 @@ const createBookingController = catchAsync(async (req, res) => {
       message: "Booking created successfully",
       data: result,
     });
-  } catch (error:any) {
+  } catch (error) {
     sendResponse({
       res,
       statusCode: httpStatus.BAD_REQUEST,
       success: false,
-      message: error.message,
+      message: "Validation Error",
     });
   }
 });
-
 const getAllBookings = catchAsync(async (req, res) => {
   try {
     const result = await bookingServices.getAllBookingsFromDB();
@@ -90,45 +96,6 @@ const getSingleBooking = catchAsync(async (req, res) => {
   }
 });
 
-// const updateSingleBooking = catchAsync(async (req, res) => {
-//   const { id } = req.params;
-//   const updateData = req.body;
-
-//   // Validate the update data
-//   const zodParsedData = validateBooking.createBookingValidationSchema.parse(updateData);
-
-//   try {
-//     const updateResult = await bookingServices.updateBookingIntoDB(id, zodParsedData);
-
-//     if (updateResult.nModified === 1) {
-//       // Fetch the updated booking data
-//       const updatedBooking = await bookingServices.getSingleBookingFromDB(id);
-
-//       sendResponse({
-//         res,
-//         statusCode: httpStatus.OK,
-//         success: true,
-//         message: "Booking updated successfully",
-//         data: updatedBooking,
-//       });
-//     } else {
-//       sendResponse({
-//         res,
-//         statusCode: httpStatus.NOT_FOUND,
-//         success: false,
-//         message: "Booking not found or data not modified",
-//       });
-//     }
-//   } catch (error) {
-//     sendResponse({
-//       res,
-//       statusCode: httpStatus.INTERNAL_SERVER_ERROR,
-//       success: false,
-//       message: "Failed to update booking",
-//     });
-//   }
-// });
-
 const deleteSingleBooking = catchAsync(async (req, res) => {
   const { id } = req.params;
 
@@ -164,6 +131,5 @@ export const bookingController = {
   createBookingController,
   getAllBookings,
   getSingleBooking,
-  // updateSingleBooking,
   deleteSingleBooking,
 };
