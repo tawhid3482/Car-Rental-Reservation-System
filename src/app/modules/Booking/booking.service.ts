@@ -14,12 +14,11 @@ const createBookingIntoDB = async (payload: TBookingCreate) => {
     throw new AppError(httpStatus.NOT_FOUND, "Car not found!");
   }
 
-  // Create booking
   const result = await Booking.create({
     date: payload.date,
     car: carId,
     startTime: payload.startTime,
-    endTime: null,  // Set endTime to null
+    endTime: null, 
     user: null,
     totalCost: 0,
   });
