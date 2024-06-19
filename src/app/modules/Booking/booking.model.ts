@@ -1,18 +1,24 @@
-import mongoose, { Schema, Document } from 'mongoose';
-import { TBooking } from './booking.interface';
+import mongoose, { Schema, model } from "mongoose";
+import { TBooking, bookingModel } from "./booking.interface";
 
-export interface BookingDocument extends TBooking, Document {}
+// export interface BookingDocument extends TBooking, Document {}
 
-const BookingSchema: Schema = new Schema({
+const bookingSchema = new Schema<TBooking, bookingModel>({
   date: { type: String, required: true },
-  user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  car: { type: Schema.Types.ObjectId, ref: 'Car', required: true },
+  user: {
+    type: Schema.Types.ObjectId,
+    required: [true, "User id is required"],
+    unique: true,
+    ref: "User",
+  },
+  car: { type: Schema.Types.ObjectId, required:true, ref:"Car" },
   startTime: {
     type: String,
     required: true,
     validate: {
       validator: (v: string) => /^([01]\d|2[0-3]):([0-5]\d)$/.test(v),
-      message: (props: { value: string }) => `${props.value} is not a valid 24-hour time format (HH:mm)`,
+      message: (props: { value: string }) =>
+        `${props.value} is not a valid 24-hour time format (HH:mm)`,
     },
   },
   endTime: {
@@ -20,12 +26,13 @@ const BookingSchema: Schema = new Schema({
     required: true,
     validate: {
       validator: (v: string) => /^([01]\d|2[0-3]):([0-5]\d)$/.test(v),
-      message: (props: { value: string }) => `${props.value} is not a valid 24-hour time format (HH:mm)`,
+      message: (props: { value: string }) =>
+        `${props.value} is not a valid 24-hour time format (HH:mm)`,
     },
   },
   totalCost: { type: Number, default: 0 },
 });
 
-const BookingModel = mongoose.model<BookingDocument>('Booking', BookingSchema);
+const Booking = model<TBooking,bookingModel>("Booking", bookingSchema);
 
-export default BookingModel;
+export default Booking;
