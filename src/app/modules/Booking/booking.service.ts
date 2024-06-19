@@ -1,34 +1,41 @@
 import httpStatus from "http-status";
-import AppError from "../../errors/AppError";
 import { CarModel } from "../Car/car.model";
-import { TBooking } from "./booking.interface";
-import Booking from "./booking.model";
+import AppError from "../../errors/AppError";
+import { TBookingCreate } from "./booking.interface";
+import { Booking } from "./booking.model";
+import mongoose from "mongoose";
 
-const createBookingIntoDB = async (payload: TBooking) => {
-  const { date, user, car, startTime, endTime, totalCost } = payload;
+const createBookingIntoDB = async (payload: TBookingCreate) => {
+  const { carId } = payload;
 
   // Check if the car ID exists
-  const isCarIdExists = await CarModel.findById(car);
+  const isCarIdExists = await CarModel.findById(carId);
   if (!isCarIdExists) {
     throw new AppError(httpStatus.NOT_FOUND, "Car not found!");
   }
 
-  // Create a new booking instance
-  const booking = new Booking({
-    date,
-    user,
-    car,
-    startTime,
-    endTime,
-    totalCost,
+  // Create booking
+  const result = await Booking.create({
+    date: payload.date,
+    car: carId,
+    startTime: payload.startTime,
+    endTime: null,  // Set endTime to null
+    user: null,
+    totalCost: 0,
   });
 
-  // Save the booking to the database
-  await booking.save();
+  return (await result.populate('user')).populate('car');
+};
 
-  return booking;
+const getBookingsByCarAndDate = async (carId: string, date: string) => {
+  // Convert carId to ObjectId
+  const objectIdCarId = new mongoose.Types.ObjectId(carId);
+
+  const bookings = await Booking.find({ car: objectIdCarId, date }).populate('user').populate('car');
+  return bookings;
 };
 
 export const BookingServices = {
   createBookingIntoDB,
+  getBookingsByCarAndDate,
 };

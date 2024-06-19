@@ -1,12 +1,12 @@
 // routes.ts
 
 import { Router } from 'express';
-import { bookingController } from './booking.controller';
+import { BookingController } from './booking.controller';
 
 const router = Router();
 
-router.post('/', bookingController.createBookingController);
-router.get('/', bookingController.getAllBookings);
+router.post('/', BookingController.createBookingController);
+router.get('/', BookingController.getBookingsByCarAndDateController);
 // router.get('/:id', bookingController.getSingleBooking);
 // router.put('/:id', bookingController.updateSingleBooking);
 // router.delete('/:id', bookingController.deleteSingleBooking);
