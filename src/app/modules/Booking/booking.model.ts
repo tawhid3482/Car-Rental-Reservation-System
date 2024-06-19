@@ -1,17 +1,15 @@
-import mongoose, { Schema, model } from "mongoose";
-import { TBooking, bookingModel } from "./booking.interface";
+import mongoose, { Schema, model, Types } from 'mongoose';
+import { BookingModel, TBooking } from './booking.interface';
 
-// export interface BookingDocument extends TBooking, Document {}
-
-const bookingSchema = new Schema<TBooking, bookingModel>({
+// Booking schema definition
+const bookingSchema = new Schema<TBooking, BookingModel>({
   date: { type: String, required: true },
   user: {
     type: Schema.Types.ObjectId,
-    required: [true, "User id is required"],
-    unique: true,
-    ref: "User",
+    required: [true, 'User id is required'],
+    ref: 'User',
   },
-  car: { type: Schema.Types.ObjectId, required:true, ref:"Car" },
+  car: { type: Schema.Types.ObjectId, required: true, ref: 'Car' },
   startTime: {
     type: String,
     required: true,
@@ -33,6 +31,12 @@ const bookingSchema = new Schema<TBooking, bookingModel>({
   totalCost: { type: Number, default: 0 },
 });
 
-const Booking = model<TBooking,bookingModel>("Booking", bookingSchema);
+// Static method implementation
+bookingSchema.statics.isUserExists = async function (id: Types.ObjectId) {
+  return this.findOne({ user: id });
+};
+
+// Create and export the Booking model
+const Booking = model<TBooking, BookingModel>('Booking', bookingSchema);
 
 export default Booking;

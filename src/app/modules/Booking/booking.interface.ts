@@ -9,6 +9,6 @@ export interface TBooking {
   totalCost: number; // Total cost of the booking, calculated based on startTime, endTime, and pricePerHour
 }
 
-export interface bookingModel extends Model<TBooking> {
-  isUserExists(id: string): Promise<TBooking | null>;
+export interface BookingModel extends Model<TBooking> {
+  isUserExists(id: Types.ObjectId): Promise<TBooking | null>;
 }
