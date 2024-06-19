@@ -1,6 +1,5 @@
 import { Schema, model, Document } from "mongoose";
 import { TCar } from "./car.interface";
-import { boolean } from "zod";
 
 interface TCarDocument extends TCar, Document {}
 
