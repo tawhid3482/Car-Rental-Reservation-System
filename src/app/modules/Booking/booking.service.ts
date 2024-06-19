@@ -27,11 +27,18 @@ const createBookingIntoDB = async (payload: TBookingCreate) => {
   return (await result.populate('user')).populate('car');
 };
 
-const getBookingsByCarAndDate = async (carId: string, date: string) => {
-  // Convert carId to ObjectId
-  const objectIdCarId = new mongoose.Types.ObjectId(carId);
+const getBookingsByCarAndDate = async (carId?: string, date?: string) => {
+  const query: any = {};
+  
+  if (carId) {
+    query.car = new mongoose.Types.ObjectId(carId);
+  }
 
-  const bookings = await Booking.find({ car: objectIdCarId, date }).populate('user').populate('car');
+  if (date) {
+    query.date = date;
+  }
+
+  const bookings = await Booking.find(query).populate('user').populate('car');
   return bookings;
 };
 

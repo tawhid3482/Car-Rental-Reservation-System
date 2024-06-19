@@ -18,17 +18,19 @@ const createBookingController = catchAsync(async (req: Request, res: Response) =
   });
 });
 
-// Get bookings by carId and date
+
 const getBookingsByCarAndDateController = catchAsync(async (req: Request, res: Response) => {
   const { carId, date } = req.query;
-  if (!carId || !date) {
-    throw new AppError(httpStatus.BAD_REQUEST, "carId and date are required");
+
+  if (carId && typeof carId !== 'string') {
+    throw new AppError(httpStatus.BAD_REQUEST, "carId must be a string");
   }
-  if (typeof carId !== 'string' || typeof date !== 'string') {
-    throw new AppError(httpStatus.BAD_REQUEST, "carId and date must be strings");
+
+  if (date && typeof date !== 'string') {
+    throw new AppError(httpStatus.BAD_REQUEST, "date must be a string");
   }
-  
-  const result = await BookingServices.getBookingsByCarAndDate(carId, date);
+
+  const result = await BookingServices.getBookingsByCarAndDate(carId as string, date as string);
   sendResponse({
     res,
     statusCode: httpStatus.OK,
@@ -37,6 +39,7 @@ const getBookingsByCarAndDateController = catchAsync(async (req: Request, res: R
     data: result,
   });
 });
+
 
 export const BookingController = {
   createBookingController,
