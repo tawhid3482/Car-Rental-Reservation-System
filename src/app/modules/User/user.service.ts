@@ -3,9 +3,9 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import config from "../../config";
 import { TUser } from "./user.interface";
-import { UserModel } from "./user.model";
 import AppError from "../../errors/AppError";
 import httpStatus from "http-status";
+import { User } from "./user.model";
 
 const createUserIntoDB = async (payload: TUser) => {
   // Hash the password
@@ -18,7 +18,7 @@ const createUserIntoDB = async (payload: TUser) => {
     session.startTransaction();
 
     // Create a user (transaction-1)
-    const newUser = await UserModel.create([userData], { session }); // array
+    const newUser = await User.create([userData], { session }); // array
 
     if (!newUser.length) {
       throw new AppError(httpStatus.BAD_REQUEST, "Failed to create user");
@@ -35,7 +35,7 @@ const createUserIntoDB = async (payload: TUser) => {
 };
 
 const signInUserIntoDB = async (email: string, password: string) => {
-  const user = await UserModel.findOne({ email }).select("+password");
+  const user = await User.findOne({ email }).select("+password");
 
   if (!user) {
     throw new AppError(httpStatus.UNAUTHORIZED, "Invalid email or password");
