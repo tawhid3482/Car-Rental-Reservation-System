@@ -1,14 +1,13 @@
-
 import bcrypt from 'bcrypt';
-import { TLoginUser } from './auth.interface';
-import { User } from '../User/user.model';
-import { JwtPayload } from 'jsonwebtoken';
-import { createToken } from './auth.utils';
-import config from '../../config';
 
+import { JwtPayload } from 'jsonwebtoken';
+import { TLoginUser } from './auth.interface';
+import UserModel from '../User/user.model';
+import config from '../../config';
+import { createToken } from './auth.utils';
 
 const login = async (payload: TLoginUser) => {
-  const user = await User.findOne({ email: payload.email }).select(
+  const user = await UserModel.findOne({ email: payload.email }).select(
     '+password',
   );
 
@@ -17,10 +16,12 @@ const login = async (payload: TLoginUser) => {
   }
 
   //checking if the password is correct
+
   const matchPassword = await bcrypt.compare(
     payload.password,
     user.password as string,
   );
+
   if (!matchPassword) {
     throw new Error('Wrong Password !');
   }
@@ -35,10 +36,10 @@ const login = async (payload: TLoginUser) => {
   const accessToken = createToken(
     jwtPayload,
     config.jwt_access_secret as string,
-    config.jwt_access_expires_in as string,
+    config.jwt_refresh_expires_in as string,
   );
 
-  const userData = await User.findOne({ email: payload.email });
+  const userData = await UserModel.findOne({ email: payload.email });
 
   return {
     accessToken,

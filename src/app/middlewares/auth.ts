@@ -9,6 +9,7 @@ const auth = (...roles: string[]) => {
   const authorize: RequestHandler = async (req, res, next) => {
     try {
       const token = req.headers.authorization;
+
       // checking if the token is missing
       if (!token) {
         throw new Error('You must login first!');

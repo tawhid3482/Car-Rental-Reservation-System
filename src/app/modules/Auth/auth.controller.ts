@@ -10,8 +10,8 @@ const login: RequestHandler = async (req, res, next) => {
       success: true,
       statusCode: 200,
       message: 'User logged in successfully',
-      token: accessToken,
       data: userData,
+      token: accessToken,
     });
   } catch (error) {
     next(error);
