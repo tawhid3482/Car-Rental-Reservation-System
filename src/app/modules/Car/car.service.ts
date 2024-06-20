@@ -19,6 +19,7 @@ const updateCarIntoDB = async (id: string, updateData: TCar) => {
   return result;
 };
 
+
 const deleteSingleCarFromDB = async (id: string) => {
   const result = await CarModel.updateOne({ _id: id }, { $set: { isDeleted: true } });
   return result;

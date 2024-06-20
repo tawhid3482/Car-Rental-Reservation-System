@@ -67,6 +67,7 @@ const updateSingleCar = catchAsync(async (req, res) => {
   }
 });
 
+
 const deleteSingleCar = catchAsync(async (req, res) => {
     const { id } = req.params;
     const deleteResult = await carServices.deleteSingleCarFromDB(id);

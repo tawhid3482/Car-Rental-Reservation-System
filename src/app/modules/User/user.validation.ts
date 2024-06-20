@@ -1,20 +1,27 @@
 import { z } from 'zod';
-import { USER_ROLE } from './user.constant';
 
-export const userValidationSchema = z.object({
-  name: z.string().nonempty({ message: 'Name is required' }),
-  email: z.string().email({ message: 'Invalid email address' }),
-  role: z.enum(Object.values(USER_ROLE) as [string, ...string[]]),
-  password: z.string().min(6, { message: 'Password must be at least 6 characters long' }),
-  phone: z.string().nonempty({ message: 'Phone number is required' }),
-  address: z.string().nonempty({ message: 'Address is required' }),
+export const UserRoleSchema = z.enum(['admin', 'user']);
+
+const createUserValidation = z.object({
+  body: z.object({
+    name: z.string(),
+    email: z.string().email(),
+    password: z.string(),
+    phone: z.string(),
+    role: UserRoleSchema,
+    address: z.string(),
+  }),
 });
 
-export const signInValidationSchema = z.object({
-  email: z.string().email({ message: 'Invalid email address' }),
-  password: z.string().min(6, { message: 'Password must be at least 6 characters long' }),
+const updateUserValidation = z.object({
+  body: z.object({
+    name: z.string().optional(),
+    email: z.string().email().optional(),
+    password: z.string().optional(),
+    phone: z.string().optional(),
+    role: UserRoleSchema.optional(),
+    address: z.string().optional(),
+  }),
 });
-export const validationUser = {
-  userValidationSchema,
-  signInValidationSchema
-}
+
+export const validateUser = { createUserValidation, updateUserValidation };

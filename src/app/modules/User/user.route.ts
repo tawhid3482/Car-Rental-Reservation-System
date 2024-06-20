@@ -1,9 +1,15 @@
 import express from "express";
-import { UserController } from "./user.controller";
+import { UserControllers } from "./user.controller";
+import validateRequest from "../../middlewares/validationRequest";
+import { validateUser } from "./user.validation";
 
 const router = express.Router();
 
-router.post("/signup", UserController.createUserController);
-router.post("/signin", UserController.signInUserController);
+router.post(
+  "/signup",
+  validateRequest(validateUser.createUserValidation),
+  UserControllers.createUser
+);
+// router.post("/signin", UserController.signInUserController);
 
 export const UserRoutes = router;
