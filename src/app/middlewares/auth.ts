@@ -4,7 +4,6 @@ import jwt from 'jsonwebtoken';
 import config from '../config';
 import UserModel from '../modules/User/user.model';
 
-
 const auth = (...roles: string[]) => {
   const authorize: RequestHandler = async (req, res, next) => {
     try {
@@ -17,15 +16,11 @@ const auth = (...roles: string[]) => {
 
       const tokenParts = token.split(' ');
 
-      // checking if the token is in the correct format
       if (tokenParts.length !== 2 || tokenParts[0] !== 'Bearer') {
         throw new Error('Invalid token format');
       }
 
-      // Extract the token from the token parts
       const accessToken = tokenParts[1];
-
-      // checking if the given token is valid
       const decoded = jwt.verify(
         accessToken,
         config.jwt_access_secret as string,
