@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const UserRoleSchema = z.enum(['admin', 'user']);
 
-const createUserValidation = z.object({
+const createUserValidationSchema = z.object({
   body: z.object({
     name: z.string(),
     email: z.string().email(),
@@ -13,7 +13,7 @@ const createUserValidation = z.object({
   }),
 });
 
-const updateUserValidation = z.object({
+const updateUserValidationSchema = z.object({
   body: z.object({
     name: z.string().optional(),
     email: z.string().email().optional(),
@@ -24,4 +24,4 @@ const updateUserValidation = z.object({
   }),
 });
 
-export const validateUser = { createUserValidation, updateUserValidation };
+export const validateUser = { createUserValidationSchema, updateUserValidationSchema };
