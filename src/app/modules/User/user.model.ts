@@ -1,6 +1,5 @@
 import mongoose, { Schema, model, Document } from "mongoose";
 import { TUser } from "./user.interface";
-import { USER_ROLE } from "./user.constant";
 import bcrypt from 'bcrypt';
 import config from "../../config";
 
@@ -33,31 +32,8 @@ userSchema.pre('save', async function (next) {
     user.password,
     Number(config.bcrypt_salt_rounds),
   );
-
   next();
 });
-
-
-// userSchema.statics.isUserExistsByCustomId = async function (id: string) {
-//   return await User.findOne({ id }).select('+password');
-// };
-
-// userSchema.statics.isPasswordMatched = async function (
-//   plainTextPassword,
-//   hashedPassword,
-// ) {
-//   return await bcrypt.compare(plainTextPassword, hashedPassword);
-// };
-
-// userSchema.statics.isJWTIssuedBeforePasswordChanged = function (
-//   passwordChangedTimestamp: Date,
-//   jwtIssuedTimestamp: number,
-// ) {
-//   const passwordChangedTime =
-//     new Date(passwordChangedTimestamp).getTime() / 1000;
-//   return passwordChangedTime > jwtIssuedTimestamp;
-// };
-
 
 
 const UserModel = mongoose.model<TUser>('User', userSchema);
