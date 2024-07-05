@@ -45,10 +45,10 @@
 //   signInUserController,
 // };
 
-import { RequestHandler } from 'express';
-import { UserServices } from './user.service';
-import sendResponse from '../../utils/sendResponse';
-import httpStatus from 'http-status';
+import { RequestHandler } from "express";
+import { UserServices } from "./user.service";
+import sendResponse from "../../utils/sendResponse";
+import httpStatus from "http-status";
 
 const createUser: RequestHandler = async (req, res, next) => {
   try {

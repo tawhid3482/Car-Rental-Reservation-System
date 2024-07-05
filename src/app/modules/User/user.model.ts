@@ -4,7 +4,6 @@ import { USER_ROLE } from "./user.constant";
 import bcrypt from 'bcrypt';
 import config from "../../config";
 
-// interface TUserDocument extends TUser, UserModel,  Document {}
 
 const userSchema = new Schema<TUser>(
   {
@@ -12,7 +11,10 @@ const userSchema = new Schema<TUser>(
     email: { type: String, required: true, unique: true },
     role: {
       type: String,
-      enum: Object.values(USER_ROLE),
+      enum: {
+        values:['user','admin'],
+        message:'{VALUE} is not correct role '
+      },
       required: true,
     },
     password: { type: String, required: true, select: false },
@@ -35,10 +37,6 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
-// userSchema.post('save', function (doc, next) {
-//   doc.password = '';
-//   next();
-// });
 
 // userSchema.statics.isUserExistsByCustomId = async function (id: string) {
 //   return await User.findOne({ id }).select('+password');

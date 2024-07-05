@@ -7,8 +7,6 @@
 // import httpStatus from "http-status";
 // import { User } from "./user.model";
 
-
-
 // const createUserIntoDB = async (payload: TUser) => {
 //   // Hash the password
 //   const hashedPassword = await bcrypt.hash(payload.password, 10);
@@ -68,10 +66,8 @@
 import { TUser } from "./user.interface";
 import UserModel from "./user.model";
 
-
 const createUser = async (payload: TUser) => {
   const result = await UserModel.create(payload);
-
   // Create a new object without the password field
   const sanitizedUser = {
     ...result.toObject(),
