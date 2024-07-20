@@ -1,8 +1,8 @@
 import mongoose, { Schema, model, Types } from "mongoose";
-import { BookingModel, TBooking, TBookingCreate } from "./booking.interface";
+import { TBooking, TBookingCreate } from "./booking.interface";
 
 // Booking schema definition
-const bookingSchema = new Schema<TBooking, BookingModel>({
+const bookingSchema = new Schema<TBooking, TBookingCreate>({
   date: { type: String, required: true },
   user: {
     type: Schema.Types.ObjectId,
@@ -33,9 +33,9 @@ bookingSchema.statics.isUserExists = async function (id: Types.ObjectId) {
   return this.findOne({ user: id });
 };
 
-export const Booking = model<TBooking, BookingModel>("Booking", bookingSchema);
+export const Booking = model<TBooking, TBookingCreate>("Booking", bookingSchema);
 
-export const bookingSchemaPost = new Schema <TBookingCreate, BookingModel>({
+export const bookingSchemaPost = new Schema <TBookingCreate, TBookingCreate>({
   date: { type: String, required: true },
   carId: { type: Schema.Types.ObjectId, required: true, ref: "Car" },
   startTime: {

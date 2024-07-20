@@ -1,9 +1,7 @@
-import { Schema, model, Document } from "mongoose";
+import { Schema, model } from "mongoose";
 import { TCar } from "./car.interface";
 
-interface TCarDocument extends TCar, Document {}
-
-const carSchema = new Schema<TCarDocument>(
+const carSchema = new Schema<TCar>(
   {
     name: { type: String, required: true },
     description: { type: String, required: true },
@@ -22,4 +20,4 @@ const carSchema = new Schema<TCarDocument>(
     timestamps: true,
   }
 );
-export const CarModel = model<TCarDocument>('Car', carSchema);
+export const CarModel = model<TCar>("Car", carSchema);

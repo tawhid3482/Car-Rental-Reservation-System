@@ -1,19 +1,16 @@
-import { Model, Types } from "mongoose";
+import { Types } from "mongoose";
 
-export interface TBooking {
-  date: string; // YYYY-MM-DD format for the booking date
+export type TBooking = {
+  date: string; 
   user: Types.ObjectId; // Reference to the user model
-  car: Types.ObjectId; // Reference to the car model
-  startTime: string; // HH:mm format for 24-hour time
-  endTime: string; // HH:mm format for 24-hour time
-  totalCost?: number | undefined; // Total cost of the booking, calculated based on startTime, endTime, and pricePerHour
+  car: Types.ObjectId; 
+  startTime: string; 
+  endTime: string; 
+  totalCost?: number | undefined;
 }
-export interface TBookingCreate {
-  date: string; // YYYY-MM-DD format for the booking date
-  carId: Types.ObjectId; // Reference to the car model
-  startTime: string; // HH:mm format for 24-hour time
+export type TBookingCreate = {
+  date: string; 
+  carId: Types.ObjectId; 
+  startTime: string; 
 }
 
-export interface BookingModel extends Model<TBooking, TBookingCreate> {
-  isUserExists(id: Types.ObjectId): Promise<TBooking | TBookingCreate | null>;
-}

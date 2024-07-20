@@ -10,7 +10,7 @@ const getAllCarFromDB = async () => {
   return result;
 };
 const getSingleCarFromDB = async (id: string) => {
-  const result = await CarModel.findById(id);
+  const result = await CarModel.findById({_id:id});
   return result;
 };
 
@@ -19,9 +19,11 @@ const updateCarIntoDB = async (id: string, updateData: TCar) => {
   return result;
 };
 
-
 const deleteSingleCarFromDB = async (id: string) => {
-  const result = await CarModel.updateOne({ _id: id }, { $set: { isDeleted: true } });
+  const result = await CarModel.updateOne(
+    { _id: id },
+    { $set: { isDeleted: true } }
+  );
   return result;
 };
 
@@ -30,5 +32,5 @@ export const carServices = {
   getAllCarFromDB,
   getSingleCarFromDB,
   updateCarIntoDB,
-  deleteSingleCarFromDB
+  deleteSingleCarFromDB,
 };

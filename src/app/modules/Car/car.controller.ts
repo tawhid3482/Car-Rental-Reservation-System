@@ -1,7 +1,6 @@
 import httpStatus from "http-status";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
-import { carValidation } from "./car.validation";
 import { carServices } from "./car.service";
 
 const createCarController = catchAsync(async (req, res) => {
@@ -10,7 +9,7 @@ const createCarController = catchAsync(async (req, res) => {
     res,
     statusCode: httpStatus.CREATED,
     success: true,
-    message: "Car  created  successfully",
+    message: "Car created successfully",
     data: result,
   });
 });
@@ -41,10 +40,7 @@ const getSingleCars = catchAsync(async (req, res) => {
 const updateSingleCar = catchAsync(async (req, res) => {
   const { id } = req.params;
   const updateData = req.body;
-  const zodParsedData =
-    carValidation.carUpdateValidationSchema.parse(updateData);
-
-  const updateResult = await carServices.updateCarIntoDB(id, zodParsedData);
+  const updateResult = await carServices.updateCarIntoDB(id, updateData);
 
   if (updateResult.modifiedCount === 1) {
     // Fetch the updated car data
@@ -67,30 +63,29 @@ const updateSingleCar = catchAsync(async (req, res) => {
   }
 });
 
-
 const deleteSingleCar = catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const deleteResult = await carServices.deleteSingleCarFromDB(id);
-  
-    if (deleteResult.modifiedCount === 1) {
-      const deletedCar = await carServices.getSingleCarFromDB(id);
-  
-      sendResponse({
-        res,
-        statusCode: httpStatus.OK,
-        success: true,
-        message: "Car deleted successfully",
-        data: deletedCar,
-      });
-    } else {
-      sendResponse({
-        res,
-        statusCode: httpStatus.NOT_FOUND,
-        success: false,
-        message: "Car not found",
-      });
-    }
-  });
+  const { id } = req.params;
+  const deleteResult = await carServices.deleteSingleCarFromDB(id);
+
+  if (deleteResult.modifiedCount === 1) {
+    const deletedCar = await carServices.getSingleCarFromDB(id);
+
+    sendResponse({
+      res,
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Car deleted successfully",
+      data: deletedCar,
+    });
+  } else {
+    sendResponse({
+      res,
+      statusCode: httpStatus.NOT_FOUND,
+      success: false,
+      message: "Car not found",
+    });
+  }
+});
 
 export const carController = {
   createCarController,
