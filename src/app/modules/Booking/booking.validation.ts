@@ -21,8 +21,8 @@ export const createBookingValidationSchema = z.object({
     user: z.string().optional(),
     car: z.string(),
     startTime: timeStringSchema,
-    endTime: z.union([timeStringSchema, z.null()]).optional(), // Allow null for endTime
-    totalCost: z.number().nonnegative().optional(), // Optional as it's calculated server-side
+    endTime: z.union([timeStringSchema, z.null()]).optional(), 
+    totalCost: z.number().nonnegative().positive().optional(), 
   })
 });
 

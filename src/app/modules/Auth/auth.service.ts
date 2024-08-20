@@ -9,11 +9,9 @@ const signInUserIntoDB = async (payload: TSignInUser) => {
   const user = await UserModel.findOne({ email: payload?.email }).select(
     "+password"
   );
-
   if (!user) {
-    throw new Error("User not found !");
+    throw new Error("User not found!");
   }
-
   // Checking if the password is correct
   const matchPassword = await bcrypt.compare(
     payload.password,
@@ -36,8 +34,7 @@ const signInUserIntoDB = async (payload: TSignInUser) => {
     config.jwt_access_expires_in as string 
   );
 
-  const userData = await UserModel.findOne({ email: payload.email });
-
+  const userData = await UserModel.findOne({ email: payload.email }).select('-password');
   return {
     accessToken,
     userData,

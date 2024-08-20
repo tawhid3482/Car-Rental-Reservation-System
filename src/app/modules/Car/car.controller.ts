@@ -32,7 +32,7 @@ const getSingleCars = catchAsync(async (req, res) => {
     res,
     statusCode: httpStatus.OK,
     success: true,
-    message: "Cars retrieved successfully",
+    message: "A car retrieved successfully",
     data: result,
   });
 });
