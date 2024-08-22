@@ -4,6 +4,8 @@ import AppError from "../../errors/AppError";
 import { Booking } from "./booking.model";
 import mongoose from "mongoose";
 import { TBooking } from "./booking.interface";
+import QueryBuilder from "../../builder/QueryBuilder";
+import { BookingSearchableField } from "./booking.constant";
 
 type TBooks ={
   carId: string;
@@ -40,10 +42,16 @@ const createBookingIntoDB = async (payload:TBooks):Promise<TBooking> => {
 
 
 
+const getBookingsByCarAndDate =  async (
+  query: Record<string, unknown>
+) => {
+  const bookingQuery = new QueryBuilder(
+    Booking.find().populate("user").populate("car"),
+    query
+  ).search(BookingSearchableField);
 
-const getBookingsByCarAndDate = async () => {
-  const result = await Booking.find()
-  return result
+  const result = await bookingQuery.modelQuery;
+  return result;
 };
 
 export const BookingServices = {

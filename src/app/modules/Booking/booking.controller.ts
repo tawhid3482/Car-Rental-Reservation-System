@@ -1,35 +1,26 @@
-import { Request, Response, NextFunction } from 'express';
-import httpStatus from 'http-status';
-import { BookingServices } from './booking.service';
-import catchAsync from '../../utils/catchAsync';
-import sendResponse from '../../utils/sendResponse';
-import mongoose from 'mongoose';
-import AppError from '../../errors/AppError';
+import { Request, Response } from "express";
+import httpStatus from "http-status";
+import { BookingServices } from "./booking.service";
+import catchAsync from "../../utils/catchAsync";
+import sendResponse from "../../utils/sendResponse";
+
 
 // Create a new booking
-const createBookingController = catchAsync(async (req: Request, res: Response) => {
-  const result = await BookingServices.createBookingIntoDB(req.body);
-  sendResponse({
-    res,
-    statusCode: httpStatus.CREATED,
-    success: true,
-    message: "Car booked successfully",
-    data: result,
-  });
-});
-
-
-const getBookingsByCarAndDateController = catchAsync(async (req: Request, res: Response) => {
-  const { carId, date } = req.query;
-  if (carId && typeof carId !== 'string') {
-    throw new AppError(httpStatus.BAD_REQUEST, "carId must be a string");
+const createBookingController = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await BookingServices.createBookingIntoDB(req.body);
+    sendResponse({
+      res,
+      statusCode: httpStatus.CREATED,
+      success: true,
+      message: "Car booked successfully",
+      data: result,
+    });
   }
+);
 
-  if (date && typeof date !== 'string') {
-    throw new AppError(httpStatus.BAD_REQUEST, "date must be a string");
-  }
-
-  const result = await BookingServices.getBookingsByCarAndDate();
+const getBookingsByCarAndDateController = catchAsync(async (req, res) => {
+  const result = await BookingServices.getBookingsByCarAndDate(req.query);
   sendResponse({
     res,
     statusCode: httpStatus.OK,
@@ -38,7 +29,6 @@ const getBookingsByCarAndDateController = catchAsync(async (req: Request, res: R
     data: result,
   });
 });
-
 
 export const BookingController = {
   createBookingController,
