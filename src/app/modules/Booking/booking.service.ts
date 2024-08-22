@@ -1,44 +1,49 @@
 import httpStatus from "http-status";
 import { CarModel } from "../Car/car.model";
 import AppError from "../../errors/AppError";
-import { TBookingCreate } from "./booking.interface";
 import { Booking } from "./booking.model";
 import mongoose from "mongoose";
+import { TBooking } from "./booking.interface";
 
-const createBookingIntoDB = async (payload: TBookingCreate) => {
+type TBooks ={
+  carId: string;
+  userId: string;
+  date: string;
+  startTime: string;
+}
+
+const createBookingIntoDB = async (payload:TBooks):Promise<TBooking> => {
   const { carId } = payload;
 
   // Check if the car ID exists
-  const isCarIdExists = await CarModel.findById(carId);
-  if (!isCarIdExists) {
+  const car = await CarModel.findById(carId);
+  if (!car) {
     throw new AppError(httpStatus.NOT_FOUND, "Car not found!");
   }
-
+    // // Assuming the user ID is coming from payload or session (mocked for now)
+  // const userId = "6071f0fbf98b210012345688"; // Replace this with actual user ID
+  // const user = await UserModel.findById(userId);
+  // if (!user) {
+  //   throw new AppError(httpStatus.NOT_FOUND, "User not found!");
+  // }
   const result = await Booking.create({
     date: payload.date,
-    car: carId,
+    car: payload.carId,  
     startTime: payload.startTime,
-    endTime: null, 
+    endTime: null,
     user: null,
     totalCost: 0,
   });
-
-  return (await result.populate('user')).populate('car');
+  return (await result.populate('car')).populate('user');
 };
 
-const getBookingsByCarAndDate = async (carId?: string, date?: string) => {
-  const query: any = {};
-  
-  if (carId) {
-    query.car = new mongoose.Types.ObjectId(carId);
-  }
 
-  if (date) {
-    query.date = date;
-  }
 
-  const bookings = await Booking.find(query).populate('user').populate('car');
-  return bookings;
+
+
+const getBookingsByCarAndDate = async () => {
+  const result = await Booking.find()
+  return result
 };
 
 export const BookingServices = {

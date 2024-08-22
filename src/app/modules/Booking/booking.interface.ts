@@ -9,9 +9,5 @@ export type TBooking = {
   totalCost?: number | undefined;
 }
 
-export type TBookingCreate = {
-  date: string; 
-  carId: Types.ObjectId; 
-  startTime: string; 
-}
+
 

@@ -19,12 +19,14 @@ export const createBookingValidationSchema = z.object({
         message: "Invalid date format",
       }),
     user: z.string().optional(),
-    car: z.string(),
+    carId: z.string(),
     startTime: timeStringSchema,
     endTime: z.union([timeStringSchema, z.null()]).optional(), 
     totalCost: z.number().nonnegative().positive().optional(), 
   })
 });
+
+
 
 export const validationSchema = {
 createBookingValidationSchema,

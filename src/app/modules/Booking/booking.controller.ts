@@ -21,7 +21,6 @@ const createBookingController = catchAsync(async (req: Request, res: Response) =
 
 const getBookingsByCarAndDateController = catchAsync(async (req: Request, res: Response) => {
   const { carId, date } = req.query;
-
   if (carId && typeof carId !== 'string') {
     throw new AppError(httpStatus.BAD_REQUEST, "carId must be a string");
   }
@@ -30,7 +29,7 @@ const getBookingsByCarAndDateController = catchAsync(async (req: Request, res: R
     throw new AppError(httpStatus.BAD_REQUEST, "date must be a string");
   }
 
-  const result = await BookingServices.getBookingsByCarAndDate(carId as string, date as string);
+  const result = await BookingServices.getBookingsByCarAndDate();
   sendResponse({
     res,
     statusCode: httpStatus.OK,
