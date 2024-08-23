@@ -9,34 +9,23 @@ class QueryBuilder<T> {
     this.query = query;
   }
 
-    search(searchableFields: string[]) {
-      const carId = this?.query?.carId;
-      if (carId) {
-        this.modelQuery = this.modelQuery.find({
-          $or: searchableFields.map(
-            (field) =>
-              ({
-                [field]: { $regex: carId, $options: 'i' },
-              } as FilterQuery<T>)
-          ),
-        });
-      }
+  filter() {
+    const { carId, date, ...restQuery } = this.query;
+    console.log(carId)
 
-      return this;
+    // Filtering by carId and date if provided
+    if (carId) {
+      this.modelQuery = this.modelQuery.find({ car: carId });
     }
 
-//   filter() {
-//     const queryObj = { ...this.query }; // copy
+    if (date) {
+      this.modelQuery = this.modelQuery.find({ date });
+    }
 
-//     // Filtering
-//     const excludeFields = ["carId", "date"];
+    this.modelQuery = this.modelQuery.find(restQuery as FilterQuery<T>);
 
-//     excludeFields.forEach((el) => delete queryObj[el]);
-
-//     this.modelQuery = this.modelQuery.find(queryObj as FilterQuery<T>);
-
-//     return this;
-//   }
+    return this;
+  }
 }
 
 export default QueryBuilder;

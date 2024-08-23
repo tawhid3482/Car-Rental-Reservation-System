@@ -40,17 +40,16 @@ const createBookingIntoDB = async (payload:TBooks):Promise<TBooking> => {
 };
 
 
-
-
 const getBookingsByCarAndDate =  async (
   query: Record<string, unknown>
 ) => {
   const bookingQuery = new QueryBuilder(
     Booking.find().populate("user").populate("car"),
     query
-  ).search(BookingSearchableField);
+  ).filter();
 
   const result = await bookingQuery.modelQuery;
+  console.log(result)
   return result;
 };
 
