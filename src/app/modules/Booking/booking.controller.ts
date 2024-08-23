@@ -30,7 +30,19 @@ const getBookingsByCarAndDateController = catchAsync(async (req, res) => {
   });
 });
 
+const getBookingsByUserCar = catchAsync(async (req, res) => {
+  const result = await BookingServices.getBookingsByUserCarFromDb();
+  sendResponse({
+    res,
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "My Bookings retrieved successfully",
+    data: result,
+  });
+});
+
 export const BookingController = {
   createBookingController,
   getBookingsByCarAndDateController,
+  getBookingsByUserCar
 };
