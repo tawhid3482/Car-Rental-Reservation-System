@@ -4,11 +4,13 @@ import { BookingServices } from "./booking.service";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 
-
 // Create a new booking
 const createBookingController = catchAsync(
   async (req: Request, res: Response) => {
-    const result = await BookingServices.createBookingIntoDB(req.body);
+    const userId = req.user._id; 
+    console.log(userId);
+    const result = await BookingServices.createBookingIntoDB(req.body, userId);
+
     sendResponse({
       res,
       statusCode: httpStatus.CREATED,
@@ -18,6 +20,7 @@ const createBookingController = catchAsync(
     });
   }
 );
+
 
 const getBookingsByCarAndDateController = catchAsync(async (req, res) => {
   const result = await BookingServices.getBookingsByCarAndDate(req.query);
@@ -44,5 +47,5 @@ const getBookingsByUserCar = catchAsync(async (req, res) => {
 export const BookingController = {
   createBookingController,
   getBookingsByCarAndDateController,
-  getBookingsByUserCar
+  getBookingsByUserCar,
 };

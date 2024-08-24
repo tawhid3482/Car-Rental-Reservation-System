@@ -1,3 +1,4 @@
+import { TBooking } from "../Booking/booking.interface";
 import { TCar } from "./car.interface";
 import { CarModel } from "./car.model";
 
@@ -27,10 +28,17 @@ const deleteSingleCarFromDB = async (id: string) => {
   return result;
 };
 
+const returnTheCarIntoDB = async (updateData: TBooking) => {
+  const result = await CarModel.updateOne({ $set: updateData });
+  return result;
+};
+
+
 export const carServices = {
   createCarIntoDB,
   getAllCarFromDB,
   getSingleCarFromDB,
   updateCarIntoDB,
   deleteSingleCarFromDB,
+  returnTheCarIntoDB
 };

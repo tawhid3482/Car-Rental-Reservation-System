@@ -2,6 +2,7 @@ import httpStatus from "http-status";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import { carServices } from "./car.service";
+import { BookingServices } from "../Booking/booking.service";
 
 const createCarController = catchAsync(async (req, res) => {
   const result = await carServices.createCarIntoDB(req.body);
@@ -86,6 +87,33 @@ const deleteSingleCar = catchAsync(async (req, res) => {
     });
   }
 });
+
+// const returnTheCar = catchAsync(async (req, res) => {
+//   const updateData = req.body;
+//   console.log(updateData)
+//   const updateResult = await BookingServices.(updateData);
+
+//   if (updateResult.modifiedCount === 1) {
+//     // Fetch the updated car data
+//     const updatedBooking = await BookingServices
+
+//     sendResponse({
+//       res,
+//       statusCode: httpStatus.OK,
+//       success: true,
+//       message: "Car returned successfully",
+//       data: updatedBooking,
+//     });
+//   } else {
+//     sendResponse({
+//       res,
+//       statusCode: httpStatus.NOT_FOUND,
+//       success: false,
+//       message: "Car not found",
+//     });
+//   }
+// });
+
 
 export const carController = {
   createCarController,

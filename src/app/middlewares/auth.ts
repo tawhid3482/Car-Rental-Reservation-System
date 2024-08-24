@@ -9,7 +9,6 @@ const auth = (...roles: string[]) => {
     try {
       const token = req.headers.authorization;
 
-      // checking if the token is missing
       if (!token) {
         throw new Error('You must login first!');
       }
@@ -23,16 +22,15 @@ const auth = (...roles: string[]) => {
       const accessToken = tokenParts[1];
       const decoded = jwt.verify(
         accessToken,
-        config.jwt_access_secret as string,
+        config.jwt_access_secret as string
       ) as JwtPayload;
 
       const { email, role } = decoded;
 
-      // checking if the user is exist
       const user = await UserModel.findOne({ email: email });
 
       if (!user) {
-        throw new Error('This user is not found !');
+        throw new Error('This user is not found!');
       }
 
       if (roles && !roles.includes(role)) {
@@ -43,7 +41,7 @@ const auth = (...roles: string[]) => {
         });
       }
 
-      req.user = decoded as JwtPayload;
+      req.user = user; 
       next();
     } catch (error) {
       next(error);
