@@ -22,6 +22,7 @@ router.get(
 );
 
 router.get("/my-bookings", auth('user'), BookingController.getBookingsByUserCar);
-// router.put('/return', BookingController);
+
+router.put('/return', auth('admin'),validateRequest(validationSchema.returnCarValidationSchema), BookingController.returnCarController);
 
 export const BookingRoutes = router;

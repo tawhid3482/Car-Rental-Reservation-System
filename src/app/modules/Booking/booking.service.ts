@@ -5,6 +5,7 @@ import { Booking } from "./booking.model";
 import mongoose, { Types } from "mongoose";
 import { TBooking } from "./booking.interface";
 import QueryBuilder from "../../builder/QueryBuilder";
+import { query } from "express";
 
 type TBooks = {
   carId: string;
@@ -12,7 +13,10 @@ type TBooks = {
   startTime: string;
 };
 
-const createBookingIntoDB = async (payload: TBooks, userId: Types.ObjectId): Promise<TBooking> => {
+const createBookingIntoDB = async (
+  payload: TBooks,
+  userId: Types.ObjectId
+): Promise<TBooking> => {
   const { carId } = payload;
 
   // Check if the car ID exists
@@ -24,7 +28,7 @@ const createBookingIntoDB = async (payload: TBooks, userId: Types.ObjectId): Pro
   // Create the booking
   const result = await Booking.create({
     date: payload.date,
-    user: userId, // Associate the booking with the user
+    user: userId,
     car: carId,
     startTime: payload.startTime,
     endTime: null,
@@ -35,7 +39,6 @@ const createBookingIntoDB = async (payload: TBooks, userId: Types.ObjectId): Pro
   return (await result.populate("car")).populate("user");
 };
 
-
 const getBookingsByCarAndDate = async (query: Record<string, unknown>) => {
   const bookingQuery = new QueryBuilder(
     Booking.find().populate("user").populate("car"),
@@ -43,43 +46,47 @@ const getBookingsByCarAndDate = async (query: Record<string, unknown>) => {
   ).filter();
 
   const result = await bookingQuery.modelQuery;
-  console.log(result);
   return result;
 };
 
-const getBookingsByUserCarFromDb = async () => {
-  const result = await Booking.find();
+const getBookingsByUserCarFromDb = async (userId: string) => {
+  const result = await Booking.find({ user: userId })
+    .populate("car")
+    .populate("user");
   return result;
 };
 
-// const returnCarBooking = async(payload:TBooksUpdate):Promise<TBooking>=>{
-//   const { bookingId } = payload;
+const returnCarBookingInDb = async (bookingId: string, endTime: string) => {
+  const booking = await Booking.findById(bookingId).populate("car");
 
-  
-//   // if (!user) {
-//   //   throw new AppError(httpStatus.NOT_FOUND, "User not found!");
-//   // }
+  if (!booking) {
+    throw new AppError(httpStatus.NOT_FOUND, "Booking not found!");
+  }
 
-//   // Check if the car ID exists
-//   const booking = await Booking.findById(bookingId);
-//   if (!booking) {
-//     throw new AppError(httpStatus.NOT_FOUND, "booking id not found!");
-//   }
+  if (booking.endTime) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Car has already been returned!"
+    );
+  }
 
-//   const result = await Booking.create({
-//     date: payload.date,
-//     user: user,
-//     car: payload.carId,
-//     startTime: payload.startTime,
-//     endTime: payload.endTime,
-//     totalCost: 0,
-//   });
-//   return (await result.populate("car")).populate("user");
-// }
+  // Update booking with end time and calculate total cost
+  booking.endTime = endTime;
 
+  const hoursUsed =
+    (new Date(`1970-01-01T${endTime}Z`).getTime() -
+      new Date(`1970-01-01T${booking.startTime}Z`).getTime()) /
+    (1000 * 60 * 60);
+  booking.totalCost = hoursUsed * booking.car.pricePerHour;
+
+  await booking.save();
+
+  return booking;
+};
 
 export const BookingServices = {
   createBookingIntoDB,
   getBookingsByCarAndDate,
   getBookingsByUserCarFromDb,
+  returnCarBookingInDb
 };

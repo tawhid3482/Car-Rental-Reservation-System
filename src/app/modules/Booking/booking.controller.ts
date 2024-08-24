@@ -7,7 +7,7 @@ import sendResponse from "../../utils/sendResponse";
 // Create a new booking
 const createBookingController = catchAsync(
   async (req: Request, res: Response) => {
-    const userId = req.user._id; 
+    const userId = req.user._id;
     console.log(userId);
     const result = await BookingServices.createBookingIntoDB(req.body, userId);
 
@@ -21,7 +21,6 @@ const createBookingController = catchAsync(
   }
 );
 
-
 const getBookingsByCarAndDateController = catchAsync(async (req, res) => {
   const result = await BookingServices.getBookingsByCarAndDate(req.query);
   sendResponse({
@@ -34,7 +33,8 @@ const getBookingsByCarAndDateController = catchAsync(async (req, res) => {
 });
 
 const getBookingsByUserCar = catchAsync(async (req, res) => {
-  const result = await BookingServices.getBookingsByUserCarFromDb();
+  const userId = req.user._id;
+  const result = await BookingServices.getBookingsByUserCarFromDb(userId);
   sendResponse({
     res,
     statusCode: httpStatus.OK,
@@ -44,8 +44,25 @@ const getBookingsByUserCar = catchAsync(async (req, res) => {
   });
 });
 
+const returnCarController = catchAsync(async (req: Request, res: Response) => {
+  const { bookingId, endTime } = req.body;
+
+  const updatedBooking = await BookingServices.returnCarBookingInDb(bookingId, endTime);
+
+  sendResponse({
+    res,
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Car returned successfully",
+    data: updatedBooking,
+  });
+});
+
+
+
 export const BookingController = {
   createBookingController,
   getBookingsByCarAndDateController,
   getBookingsByUserCar,
+  returnCarController
 };
