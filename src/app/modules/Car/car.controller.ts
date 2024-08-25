@@ -88,31 +88,20 @@ const deleteSingleCar = catchAsync(async (req, res) => {
   }
 });
 
-// const returnTheCar = catchAsync(async (req, res) => {
-//   const updateData = req.body;
-//   console.log(updateData)
-//   const updateResult = await BookingServices.(updateData);
+const returnCarController = catchAsync(async (req, res) => {
+  const { bookingId, endTime } = req.body;
+  console.log('Received request to return car with bookingId:', bookingId);
+  console.log('Received request to return car with endTime:', endTime);
+  const updatedBooking = await BookingServices.returnCarBookingInDb(bookingId, endTime);
 
-//   if (updateResult.modifiedCount === 1) {
-//     // Fetch the updated car data
-//     const updatedBooking = await BookingServices
-
-//     sendResponse({
-//       res,
-//       statusCode: httpStatus.OK,
-//       success: true,
-//       message: "Car returned successfully",
-//       data: updatedBooking,
-//     });
-//   } else {
-//     sendResponse({
-//       res,
-//       statusCode: httpStatus.NOT_FOUND,
-//       success: false,
-//       message: "Car not found",
-//     });
-//   }
-// });
+  sendResponse({
+    res,
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Car returned successfully",
+    data: updatedBooking,
+  });
+});
 
 
 export const carController = {
@@ -121,4 +110,5 @@ export const carController = {
   getSingleCars,
   updateSingleCar,
   deleteSingleCar,
+  returnCarController
 };

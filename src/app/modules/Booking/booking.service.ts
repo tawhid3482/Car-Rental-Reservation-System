@@ -57,7 +57,7 @@ const getBookingsByUserCarFromDb = async (userId: string) => {
 };
 
 const returnCarBookingInDb = async (bookingId: string, endTime: string) => {
-  const booking = await Booking.findById(bookingId).populate("car");
+  const booking = await Booking.findById(bookingId).populate("car").populate('user');
 
   if (!booking) {
     throw new AppError(httpStatus.NOT_FOUND, "Booking not found!");

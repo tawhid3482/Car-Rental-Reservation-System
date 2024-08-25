@@ -4,6 +4,7 @@ import auth from "../../middlewares/auth";
 import { carValidation } from "./car.validation";
 import validateRequest from "../../middlewares/validationRequest";
 import { validationSchema } from "../Booking/booking.validation";
+import { BookingController } from "../Booking/booking.controller";
 
 const router = express.Router();
 
@@ -24,13 +25,13 @@ router.put(
   carController.updateSingleCar
 );
 
-// router.put(
-//   "/return",
-//   auth("admin"),
-//   validateRequest(validationSchema.updateBookingValidationSchema),
-//   carController.returnTheCar
-// );
+router.put(
+  "/return",
+  auth("admin"),
+  validateRequest(carValidation.returnCarValidationSchema),
+  carController.returnCarController
+)
 
-router.delete("/:id",auth('admin'), carController.deleteSingleCar);
+router.delete("/:id", auth("admin"), carController.deleteSingleCar);
 
 export const CarRoutes = router;
