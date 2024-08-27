@@ -3,12 +3,12 @@ import httpStatus from "http-status";
 import { BookingServices } from "./booking.service";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
+import AppError from "../../errors/AppError";
 
 // Create a new booking
 const createBookingController = catchAsync(
   async (req: Request, res: Response) => {
     const userId = req.user._id;
-    console.log(userId);
     const result = await BookingServices.createBookingIntoDB(req.body, userId);
 
     sendResponse({
@@ -44,19 +44,25 @@ const getBookingsByUserCar = catchAsync(async (req, res) => {
   });
 });
 
-// const returnCarController = catchAsync(async (req: Request, res: Response) => {
-//   const { bookingId, endTime } = req.body;
+const returnCarController = catchAsync(async (req: Request, res: Response) => {
+  const { bookingId, endTime } = req.body;
+  console.log(bookingId,endTime)
 
-//   const updatedBooking = await BookingServices.returnCarBookingInDb(bookingId, endTime);
+    // Validate endTime again in the controller
+    if (!/^([01]\d|2[0-3]):([0-5]\d)$/.test(endTime)) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Invalid time format!");
+    }
 
-//   sendResponse({
-//     res,
-//     statusCode: httpStatus.OK,
-//     success: true,
-//     message: "Car returned successfully",
-//     data: updatedBooking,
-//   });
-// });
+  const updatedBooking = await BookingServices.returnCarBookingInDb(bookingId, endTime);
+
+  sendResponse({
+    res,
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Car returned successfully",
+    data: updatedBooking,
+  });
+});
 
 
 
@@ -64,4 +70,5 @@ export const BookingController = {
   createBookingController,
   getBookingsByCarAndDateController,
   getBookingsByUserCar,
+  returnCarController
 };

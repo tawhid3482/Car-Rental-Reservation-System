@@ -25,6 +25,14 @@ const createBookingIntoDB = async (
     throw new AppError(httpStatus.NOT_FOUND, "Car not found!");
   }
 
+  if (car.status === "unavailable") {
+    throw new AppError(httpStatus.NOT_FOUND, "Car is already book!");
+  }
+
+  // Update car status to 'unavailable'
+  car.status = "unavailable";
+  await car.save();
+
   // Create the booking
   const result = await Booking.create({
     date: payload.date,
@@ -57,7 +65,11 @@ const getBookingsByUserCarFromDb = async (userId: string) => {
 };
 
 const returnCarBookingInDb = async (bookingId: string, endTime: string) => {
-  const booking = await Booking.findById(bookingId).populate("car").populate('user');
+  console.log(bookingId);
+
+  const booking = await Booking.findById(bookingId)
+    .populate("car")
+    .populate("user");
 
   if (!booking) {
     throw new AppError(httpStatus.NOT_FOUND, "Booking not found!");
@@ -70,14 +82,17 @@ const returnCarBookingInDb = async (bookingId: string, endTime: string) => {
     );
   }
 
+   // Update car status to 'available'
+
   // Update booking with end time and calculate total cost
-  booking.endTime = endTime;
 
   const hoursUsed =
     (new Date(`1970-01-01T${endTime}Z`).getTime() -
       new Date(`1970-01-01T${booking.startTime}Z`).getTime()) /
     (1000 * 60 * 60);
-  booking.totalCost = hoursUsed * booking.car.pricePerHour;
+  booking.endTime = endTime;
+
+  booking.totalCost = hoursUsed * booking?.car?.pricePerHour;
 
   await booking.save();
 
@@ -88,5 +103,5 @@ export const BookingServices = {
   createBookingIntoDB,
   getBookingsByCarAndDate,
   getBookingsByUserCarFromDb,
-  returnCarBookingInDb
+  returnCarBookingInDb,
 };
