@@ -82,7 +82,7 @@ const returnCarBookingInDb = async (bookingId: string, endTime: string) => {
     );
   }
 
-   // Update car status to 'available'
+  // Update car status to 'available'
 
   // Update booking with end time and calculate total cost
 
@@ -95,6 +95,15 @@ const returnCarBookingInDb = async (bookingId: string, endTime: string) => {
   booking.totalCost = hoursUsed * booking?.car?.pricePerHour;
 
   await booking.save();
+
+  // Update car status to 'available'
+  const car = await CarModel.findById(booking.car._id);
+  if (car) {
+    car.status = "available";
+    await car.save();
+  } else {
+    throw new AppError(httpStatus.NOT_FOUND, "Car not found for update!");
+  }
 
   return booking;
 };
