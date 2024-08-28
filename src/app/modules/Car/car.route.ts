@@ -4,8 +4,14 @@ import auth from "../../middlewares/auth";
 import { carValidation } from "./car.validation";
 import validateRequest from "../../middlewares/validationRequest";
 
-
 const router = express.Router();
+
+router.put(
+  "/return",
+  auth("admin"),
+  validateRequest(carValidation.returnCarValidationSchema),
+  carController.returnCarController
+);
 
 router.post(
   "/",
@@ -23,8 +29,6 @@ router.put(
   validateRequest(carValidation.updateCarValidationSchema),
   carController.updateSingleCar
 );
-
-
 
 router.delete("/:id", auth("admin"), carController.deleteSingleCar);
 

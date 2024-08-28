@@ -44,25 +44,25 @@ const getBookingsByUserCar = catchAsync(async (req, res) => {
   });
 });
 
-const returnCarController = catchAsync(async (req: Request, res: Response) => {
-  const { bookingId, endTime } = req.body;
-  console.log(bookingId,endTime)
+// const returnCarController = catchAsync(async (req: Request, res: Response) => {
+//   const { bookingId, endTime } = req.body;
+//   console.log(bookingId,endTime)
 
-    // Validate endTime again in the controller
-    if (!/^([01]\d|2[0-3]):([0-5]\d)$/.test(endTime)) {
-      throw new AppError(httpStatus.BAD_REQUEST, "Invalid time format!");
-    }
+//     // Validate endTime again in the controller
+//     if (!/^([01]\d|2[0-3]):([0-5]\d)$/.test(endTime)) {
+//       throw new AppError(httpStatus.BAD_REQUEST, "Invalid time format!");
+//     }
 
-  const updatedBooking = await BookingServices.returnCarBookingInDb(bookingId, endTime);
+//   const updatedBooking = await BookingServices.returnCarBookingInDb(bookingId, endTime);
 
-  sendResponse({
-    res,
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "Car returned successfully",
-    data: updatedBooking,
-  });
-});
+//   sendResponse({
+//     res,
+//     statusCode: httpStatus.OK,
+//     success: true,
+//     message: "Car returned successfully",
+//     data: updatedBooking,
+//   });
+// });
 
 
 
@@ -70,5 +70,5 @@ export const BookingController = {
   createBookingController,
   getBookingsByCarAndDateController,
   getBookingsByUserCar,
-  returnCarController
+  // returnCarController
 };

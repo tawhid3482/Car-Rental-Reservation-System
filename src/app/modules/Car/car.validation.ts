@@ -25,7 +25,7 @@ const returnCarValidationSchema = z.object({
   body: z.object({
     bookingId: z.string(),
     endTime: z.string().refine((time) => {
-      const regex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/; // 00-09 10-19 20-23
+      const regex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/; 
       return regex.test(time);
     }, {
       message: 'Invalid time format, expected "HH:MM" in 24 hours format',

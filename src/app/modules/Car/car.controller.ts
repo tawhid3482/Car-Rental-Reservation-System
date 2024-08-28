@@ -88,27 +88,49 @@ const deleteSingleCar = catchAsync(async (req, res) => {
   }
 });
 
-// const returnCarController = catchAsync(async (req, res) => {
-//   const { bookingId, endTime } = req.body;
-//   console.log('Received request to return car with bookingId:', bookingId);
-//   console.log('Received request to return car with endTime:', endTime);
-//   const updatedBooking = await BookingServices.returnCarBookingInDb(bookingId, endTime);
+const returnCarController = catchAsync(async (req, res) => {
+  if (req.path === "/return") {
+    // Handle the return car logic separately
+    const bookingData = req.body;
+    const result = await carServices.returnTheCarIntoDB(bookingData);
 
-//   sendResponse({
-//     res,
-//     statusCode: httpStatus.OK,
-//     success: true,
-//     message: "Car returned successfully",
-//     data: updatedBooking,
-//   });
-// });
+    // Send response after the car return logic is executed
+    sendResponse({
+      res,
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Car returned successfully",
+      data: result,
+    });
+  } else {
+    // This part should handle updating a car by ID, ensure it's correctly separated
+    const id = req.params.id;
+    const result = await carServices.updateCarIntoDB(id, req.body);
 
+    if (!result) {
+      res.status(httpStatus.NOT_FOUND).json({
+        success: false,
+        statusCode: httpStatus.NOT_FOUND,
+        message: "Data not found",
+        data: [],
+      });
+      return;
+    }
 
+    sendResponse({
+      res,
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Car updated successfully",
+      data: result,
+    });
+  }
+});
 export const carController = {
   createCarController,
   getAllCars,
   getSingleCars,
   updateSingleCar,
   deleteSingleCar,
-  // returnCarController
+  returnCarController,
 };
