@@ -9,7 +9,3 @@ export type TCar = {
   isDeleted: boolean;
 };
 
-export type TReturnCar = {
-  bookingId: string;
-  endTime: string;
-};

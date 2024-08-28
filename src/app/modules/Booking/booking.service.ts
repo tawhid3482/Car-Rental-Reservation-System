@@ -69,5 +69,4 @@ export const BookingServices = {
   createBookingIntoDB,
   getBookingsByCarAndDate,
   getBookingsByUserCarFromDb,
-  // returnCarBookingInDb,
 };

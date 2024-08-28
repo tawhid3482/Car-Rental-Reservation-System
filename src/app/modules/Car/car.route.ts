@@ -6,13 +6,6 @@ import validateRequest from "../../middlewares/validationRequest";
 
 const router = express.Router();
 
-router.put(
-  "/return",
-  auth("admin"),
-  validateRequest(carValidation.returnCarValidationSchema),
-  carController.returnCarController
-);
-
 router.post(
   "/",
   auth("admin"),
@@ -22,6 +15,13 @@ router.post(
 
 router.get("/", carController.getAllCars);
 router.get("/:id", carController.getSingleCars);
+
+router.put(
+  "/return",
+  auth("admin"),
+  validateRequest(carValidation.returnCarValidationSchema),
+  carController.returnCarController
+);
 
 router.put(
   "/:id",
