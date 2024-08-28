@@ -3,6 +3,7 @@ import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import { carServices } from "./car.service";
 import { BookingServices } from "../Booking/booking.service";
+import AppError from "../../errors/AppError";
 
 const createCarController = catchAsync(async (req, res) => {
   const result = await carServices.createCarIntoDB(req.body);
@@ -89,43 +90,61 @@ const deleteSingleCar = catchAsync(async (req, res) => {
 });
 
 const returnCarController = catchAsync(async (req, res) => {
-  if (req.path === "/return") {
-    // Handle the return car logic separately
-    const bookingData = req.body;
-    const result = await carServices.returnTheCarIntoDB(bookingData);
+  const {bookingId,endTime} = req.body;
 
-    // Send response after the car return logic is executed
-    sendResponse({
-      res,
-      success: true,
-      statusCode: httpStatus.OK,
-      message: "Car returned successfully",
-      data: result,
-    });
-  } else {
-    // This part should handle updating a car by ID, ensure it's correctly separated
-    const id = req.params.id;
-    const result = await carServices.updateCarIntoDB(id, req.body);
-
-    if (!result) {
-      res.status(httpStatus.NOT_FOUND).json({
-        success: false,
-        statusCode: httpStatus.NOT_FOUND,
-        message: "Data not found",
-        data: [],
-      });
-      return;
-    }
-
-    sendResponse({
-      res,
-      success: true,
-      statusCode: httpStatus.OK,
-      message: "Car updated successfully",
-      data: result,
-    });
+  // Validate endTime again in the controller
+  if (!/^([01]\d|2[0-3]):([0-5]\d)$/.test(endTime)) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Invalid time format!");
   }
+
+  const result = await carServices.returnTheCarIntoDB(bookingId,endTime);
+  sendResponse({
+    res,
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Car returned successfully",
+    data: result,
+  });
 });
+
+// const returnCarController = catchAsync(async (req, res) => {
+//   if (req.path === "/return") {
+//     // Handle the return car logic separately
+//     const bookingData = req.body;
+//     const result = await carServices.returnTheCarIntoDB(bookingData);
+
+//     // Send response after the car return logic is executed
+//     sendResponse({
+//       res,
+//       success: true,
+//       statusCode: httpStatus.OK,
+//       message: "Car returned successfully",
+//       data: result,
+//     });
+//   } else {
+//     // This part should handle updating a car by ID, ensure it's correctly separated
+//     const id = req.params.id;
+//     const result = await carServices.updateCarIntoDB(id, req.body);
+
+//     if (!result) {
+//       res.status(httpStatus.NOT_FOUND).json({
+//         success: false,
+//         statusCode: httpStatus.NOT_FOUND,
+//         message: "Data not found",
+//         data: [],
+//       });
+//       return;
+//     }
+
+//     sendResponse({
+//       res,
+//       success: true,
+//       statusCode: httpStatus.OK,
+//       message: "Car updated successfully",
+//       data: result,
+//     });
+//   }
+// });
 export const carController = {
   createCarController,
   getAllCars,
