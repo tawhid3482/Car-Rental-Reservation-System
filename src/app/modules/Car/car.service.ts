@@ -4,6 +4,7 @@ import { TBooking } from "../Booking/booking.interface";
 import { Booking } from "../Booking/booking.model";
 import { TCar } from "./car.interface";
 import { CarModel } from "./car.model";
+import { convertTime } from "../../utils/convertTime";
 
 const createCarIntoDB = async (payload: TCar) => {
   const result = await CarModel.create(payload);
@@ -32,40 +33,52 @@ const deleteSingleCarFromDB = async (id: string) => {
 };
 
 const returnTheCarIntoDB = async (bookingId: string, endTime: string) => {
-  const booking = await Booking.findById(bookingId).populate("car").populate({path:"user",select:'-password'});
+  const isBookingExists = await Booking.findById(bookingId)
+    .populate("car");
 
-  if (!booking) {
-    throw new AppError(httpStatus.NOT_FOUND, "Booking not found!");
+  if (!isBookingExists) {
+    throw new AppError(httpStatus.NOT_FOUND, "Booking is not found !");
   }
+  const isCarExists = await CarModel.findByIdAndUpdate(
+    isBookingExists.car,
+    {
+      status: "available",
+    },
+    {
+      new: true,
+    }
+  );
 
-  if (booking.endTime) {
-    throw new AppError(
-      httpStatus.BAD_REQUEST,
-      "Car has already been returned!"
-    );
+  if (!isCarExists) {
+    throw new AppError(httpStatus.NOT_FOUND, "Car is not found !");
   }
-
-  // Update booking with end time and calculate total cost
-  const hoursUsed =
-    (new Date(`1970-01-01T${endTime}Z`).getTime() -
-      new Date(`1970-01-01T${booking.startTime}Z`).getTime()) /
-    (1000 * 60 * 60);
-  booking.endTime = endTime;
-
-  booking.totalCost = hoursUsed * booking?.car?.pricePerHour;
-
-  // Update car status to 'available'
-  const car = await CarModel.findById(booking?.car?._id);
-  if (car) {
-    car.status = "available";
-    await car.save();
-  } else {
-    throw new AppError(httpStatus.NOT_FOUND, "Car not found for update!");
+  if (isBookingExists.endTime) {
+        throw new AppError(
+          httpStatus.BAD_REQUEST,
+          "Car has already been returned!"
+        );
+      }
+  
+  const startHours = convertTime(isBookingExists.startTime);
+  const endHours = convertTime(endTime);
+  let durationHours = endHours - startHours;
+  if (durationHours < 0) {
+    durationHours += 24;
   }
-
-  await booking.save();
-  return booking.populate('car');
+  const totalCost = Number(durationHours) * Number(isCarExists.pricePerHour);
+  const updatedBooking = await Booking.findByIdAndUpdate(
+    bookingId,
+    {
+      endTime: endTime,
+      totalCost,
+    },
+    {
+      new: true,
+    }
+  ).populate("car").populate({path:"user",select:'-password'});
+  return updatedBooking;
 };
+
 
 export const carServices = {
   createCarIntoDB,
