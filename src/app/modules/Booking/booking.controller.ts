@@ -13,7 +13,7 @@ const createBookingController = catchAsync(
 
     sendResponse({
       res,
-      statusCode: httpStatus.CREATED,
+      statusCode: httpStatus.OK,
       success: true,
       message: "Car booked successfully",
       data: result,
@@ -43,19 +43,6 @@ const getBookingsByUserCar = catchAsync(async (req, res) => {
     data: result,
   });
 });
-
-// const returnCarController = catchAsync(async (req: Request, res: Response) => {
-//   const { bookingId, endTime } = req.body
-//   const updatedBooking = await BookingServices.returnCarBookingInDb(bookingId, endTime);
-
-//   sendResponse({
-//     res,
-//     statusCode: httpStatus.OK,
-//     success: true,
-//     message: "Car returned successfully",
-//     data: updatedBooking,
-//   });
-// });
 
 export const BookingController = {
   createBookingController,

@@ -6,6 +6,7 @@ import mongoose, { Types } from "mongoose";
 import { TBooking } from "./booking.interface";
 import QueryBuilder from "../../builder/QueryBuilder";
 import { query } from "express";
+import UserModel from "../User/user.model";
 
 type TBooks = {
   carId: string;
@@ -28,6 +29,15 @@ const createBookingIntoDB = async (
   if (car.status === "unavailable") {
     throw new AppError(httpStatus.NOT_FOUND, "Car is already book!");
   }
+  if (car.isDeleted === true) {
+    throw new AppError(httpStatus.NOT_FOUND, "Car is already deleted!");
+  }
+  
+  // Check if the car ID exists
+  const user = await UserModel.findById(userId);
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found!");
+  }
 
   // Update car status to 'unavailable'
   car.status = "unavailable";
@@ -44,12 +54,18 @@ const createBookingIntoDB = async (
   });
 
   // Populate the car and user fields
-  return (await result.populate("car")).populate("user");
+  return (await result.populate("car")).populate({
+    path:'user',
+    select:'-password'
+  });
 };
 
 const getBookingsByCarAndDate = async (query: Record<string, unknown>) => {
   const bookingQuery = new QueryBuilder(
-    Booking.find().populate("user").populate("car"),
+    Booking.find().populate({
+      path:'user',
+      select:'-password'
+    }).populate("car"),
     query
   ).filter();
 
@@ -60,7 +76,10 @@ const getBookingsByCarAndDate = async (query: Record<string, unknown>) => {
 const getBookingsByUserCarFromDb = async (userId: string) => {
   const result = await Booking.find({ user: userId })
     .populate("car")
-    .populate("user");
+    .populate({
+      path:'user',
+      select:'-password'
+    });
   return result;
 };
 

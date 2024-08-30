@@ -7,6 +7,7 @@ const bookingSchema = new Schema<TBooking>(
     date: { type: String, required: true },
     user: {
       type: Schema.Types.ObjectId,
+      required:true,
       ref: "User",
     },
     car: { type: Schema.Types.ObjectId, required: true, ref: "Car" },
@@ -35,9 +36,5 @@ const bookingSchema = new Schema<TBooking>(
     timestamps: true,
   }
 );
-
-// bookingSchema.statics.isUserExists = async function (id: Types.ObjectId) {
-//   return this.findOne({ user: id });
-// };
 
 export const Booking = model<TBooking>("Booking", bookingSchema);

@@ -2,7 +2,7 @@ import httpStatus from "http-status";
 import AppError from "../../errors/AppError";
 import { TBooking } from "../Booking/booking.interface";
 import { Booking } from "../Booking/booking.model";
-import { TCar, TReturnCar } from "./car.interface";
+import { TCar } from "./car.interface";
 import { CarModel } from "./car.model";
 
 const createCarIntoDB = async (payload: TCar) => {
@@ -32,9 +32,7 @@ const deleteSingleCarFromDB = async (id: string) => {
 };
 
 const returnTheCarIntoDB = async (bookingId: string, endTime: string) => {
-  const booking = await Booking.findById(bookingId)
-    .populate("car")
-    .populate("user");
+  const booking = await Booking.findById(bookingId).populate("car").populate({path:"user",select:'-password'});
 
   if (!booking) {
     throw new AppError(httpStatus.NOT_FOUND, "Booking not found!");
@@ -56,8 +54,6 @@ const returnTheCarIntoDB = async (bookingId: string, endTime: string) => {
 
   booking.totalCost = hoursUsed * booking?.car?.pricePerHour;
 
-  await booking.save();
-
   // Update car status to 'available'
   const car = await CarModel.findById(booking?.car?._id);
   if (car) {
@@ -67,7 +63,8 @@ const returnTheCarIntoDB = async (bookingId: string, endTime: string) => {
     throw new AppError(httpStatus.NOT_FOUND, "Car not found for update!");
   }
 
-  return booking;
+  await booking.save();
+  return booking.populate('car');
 };
 
 export const carServices = {
