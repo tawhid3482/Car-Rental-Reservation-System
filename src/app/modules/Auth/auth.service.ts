@@ -24,6 +24,7 @@ const signInUserIntoDB = async (payload: TSignInUser) => {
 
   // Create token and send to the client
   const jwtPayload: JwtPayload = {
+    name:user.name,
     email: user.email,
     role: user.role,
   };

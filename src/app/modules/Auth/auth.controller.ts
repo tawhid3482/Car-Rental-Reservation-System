@@ -5,7 +5,6 @@ import httpStatus from "http-status";
 const signInUser = catchAsync(async (req, res, next) => {
   const result = await AuthServices.signInUserIntoDB(req.body);
   const { accessToken, userData } = result;
-
   return res.status(200).json({
     success: true,
     statusCode: httpStatus.OK,
