@@ -52,6 +52,31 @@ const updateSingleCar = catchAsync(async (req, res) => {
       res,
       statusCode: httpStatus.OK,
       success: true,
+      message: "Car Love status updated successfully",
+      data: updatedCar,
+    });
+  } else {
+    sendResponse({
+      res,
+      statusCode: httpStatus.NOT_FOUND,
+      success: false,
+      message: "Car not found or data not modified",
+    });
+  }
+});
+const updateSingleCarLove = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const updateData = req.body;
+  const updateResult = await carServices.updateCarLoveIntoDB(id, updateData);
+
+  if (updateResult.modifiedCount === 1) {
+    // Fetch the updated car data
+    const updatedCar = await carServices.getSingleCarFromDB(id);
+
+    sendResponse({
+      res,
+      statusCode: httpStatus.OK,
+      success: true,
       message: "Car updated successfully",
       data: updatedCar,
     });
@@ -152,4 +177,5 @@ export const carController = {
   updateSingleCar,
   deleteSingleCar,
   returnCarController,
+  updateSingleCarLove
 };

@@ -1,6 +1,5 @@
 import httpStatus from "http-status";
 import AppError from "../../errors/AppError";
-import { TBooking } from "../Booking/booking.interface";
 import { Booking } from "../Booking/booking.model";
 import { TCar } from "./car.interface";
 import { CarModel } from "./car.model";
@@ -20,6 +19,10 @@ const getSingleCarFromDB = async (id: string) => {
 };
 
 const updateCarIntoDB = async (id: string, updateData: Partial<TCar>) => {
+  const result = await CarModel.updateOne({ _id: id }, { $set: updateData });
+  return result;
+};
+const updateCarLoveIntoDB = async (id: string, updateData: Partial<TCar>) => {
   const result = await CarModel.updateOne({ _id: id }, { $set: updateData });
   return result;
 };
@@ -87,4 +90,5 @@ export const carServices = {
   updateCarIntoDB,
   deleteSingleCarFromDB,
   returnTheCarIntoDB,
+  updateCarLoveIntoDB
 };

@@ -1,5 +1,11 @@
 export type TCar = {
   name: string;
+  image:string[];
+  love:number;
+  sit:number;
+  bag:number;
+  door:number;
+  type:string;
   description: string;
   color: string;
   isElectric: boolean;

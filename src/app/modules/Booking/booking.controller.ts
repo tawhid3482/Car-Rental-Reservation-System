@@ -43,10 +43,24 @@ const getBookingsByUserCar = catchAsync(async (req, res) => {
     data: result,
   });
 });
+// BookingController.ts
+const getBookingsUser = catchAsync(async (req, res) => {
+  const { email } = req.params;
+  const result = await BookingServices.getBookingByEmail(email);
+  
+  sendResponse({
+    res,
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "My Bookings retrieved successfully",
+    data: result,
+  });
+});
 
 export const BookingController = {
   createBookingController,
   getBookingsByCarAndDateController,
   getBookingsByUserCar,
+  getBookingsUser
   // returnCarController
 };

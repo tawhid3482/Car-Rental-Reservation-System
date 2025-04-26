@@ -20,6 +20,8 @@ const createBookingIntoDB = async (
 ): Promise<TBooking> => {
   const { carId } = payload;
 
+  // console.log("Booking Payload: ", payload);
+
   // Check if the car ID exists
   const car = await CarModel.findById(carId);
   if (!car) {
@@ -32,7 +34,7 @@ const createBookingIntoDB = async (
   if (car.isDeleted === true) {
     throw new AppError(httpStatus.NOT_FOUND, "Car is already deleted!");
   }
-  
+
   // Check if the car ID exists
   const user = await UserModel.findById(userId);
   if (!user) {
@@ -55,17 +57,19 @@ const createBookingIntoDB = async (
 
   // Populate the car and user fields
   return (await result.populate("car")).populate({
-    path:'user',
-    select:'-password'
+    path: "user",
+    select: "-password",
   });
 };
 
 const getBookingsByCarAndDate = async (query: Record<string, unknown>) => {
   const bookingQuery = new QueryBuilder(
-    Booking.find().populate({
-      path:'user',
-      select:'-password'
-    }).populate("car"),
+    Booking.find()
+      .populate({
+        path: "user",
+        select: "-password",
+      })
+      .populate("car"),
     query
   ).filter();
 
@@ -74,18 +78,35 @@ const getBookingsByCarAndDate = async (query: Record<string, unknown>) => {
 };
 
 const getBookingsByUserCarFromDb = async (userId: string) => {
-  const result = await Booking.find({ user: userId })
-    .populate("car")
-    .populate({
-      path:'user',
-      select:'-password'
-    });
+  const result = await Booking.find({ user: userId }).populate("car").populate({
+    path: "user",
+    select: "-password",
+  });
   return result;
 };
 
+// BookingService.ts
+const getBookingByEmail = async (email: string) => {
+  // Find the user first
+  // console.log(email)
+  
+  const user = await UserModel.findOne({ email }).select("_id");
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found!");
+  }
+
+  // Then find all bookings of that user
+  const bookings = await Booking.find({ user: user._id })
+    .populate("car")
+    .populate({ path: "user", select: "-password" })
+    .lean(); // optional for better performance
+
+  return bookings;
+};
 
 export const BookingServices = {
   createBookingIntoDB,
   getBookingsByCarAndDate,
   getBookingsByUserCarFromDb,
+  getBookingByEmail,
 };
