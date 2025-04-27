@@ -1,20 +1,8 @@
+import { Types } from "mongoose";
+
 export type TMessage = {
-    _id: string;
-    sender: {
-      id: string;
-      name: string;
-      avatarUrl?: string;
-    };
-    receiver: {
-      id: string;
-      name: string;
-      avatarUrl?: string;
-    };
-    content: string;
-    messageType: "text" | "image" | "video" | "file";
-    attachments?: string[];
-    isRead: boolean;
-    createdAt: Date;
-    updatedAt?: Date;
-  };
-  
+  sender: Types.ObjectId;
+  receiver: Types.ObjectId;
+  content: string;
+  isSeen: boolean;
+};

@@ -1,19 +1,32 @@
+// message.route.ts
 import express from "express";
+import { MessageController } from "./message.controller";
 import validateRequest from "../../middlewares/validationRequest";
 import { messageValidation } from "./message.validation";
-import { messageController } from "./message.controller";
-
-
+import auth from "../../middlewares/auth";
 
 const router = express.Router();
 
 router.post(
   "/",
-  // auth("admin"),
+  auth('admin','user'),
   validateRequest(messageValidation.createMessageValidationSchema),
-  messageController.createMessageController
+  MessageController.sendMessage
+);
+router.get("/conversations", auth('admin'), MessageController.getAllConversations);
+
+router.get("/:otherUserId", auth('admin','user'),  MessageController.getMessages);
+
+
+
+
+router.patch(
+  "/seen",
+  validateRequest(messageValidation.updateMessageValidationSchema),
+  MessageController.markAsSeen
 );
 
-router.get("/", messageController.getAllMessages);
+// ✅ Delete Route
+router.delete("/:messageId", MessageController.deleteMessage);
 
-export const messageRoute = router
+export const MessageRoutes = router;

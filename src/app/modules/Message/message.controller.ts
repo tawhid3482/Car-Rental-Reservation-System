@@ -1,95 +1,86 @@
-import httpStatus from "http-status";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
-import { messageService } from "./message.service";
+import { MessageService } from "./message.service";
+import httpStatus from "http-status";
 
-const createMessageController = catchAsync(async (req, res) => {
-  const result = await messageService.createMessageIntoDB(req.body);
+const sendMessage = catchAsync(async (req, res) => {
+  const { receiver, content } = req.body;
+  const senderId = req.user._id;
+
+  const result = await MessageService.sendMessage(senderId, receiver, content);
 
   sendResponse({
     res,
     statusCode: httpStatus.CREATED,
     success: true,
-    message: "Message sent successfully!",
+    message: "Message sent successfully",
     data: result,
   });
 });
 
-const getAllMessages = catchAsync(async (req, res) => {
-  const result = await messageService.getAllMessagesFromDB();
+const getMessages = catchAsync(async (req, res) => {
+  const { otherUserId } = req.params;
+  const userId = req.user._id;
+  const messages = await MessageService.getMessages(userId, otherUserId);
 
   sendResponse({
     res,
     statusCode: httpStatus.OK,
     success: true,
-    message: "Messages retrieved successfully!",
-    data: result,
+    message: "Messages retrieved successfully",
+    data: messages,
   });
 });
 
-const getSingleMessage = catchAsync(async (req, res) => {
-  const { id } = req.params;
-  const result = await messageService.getSingleMessageFromDB(id);
+const markAsSeen = catchAsync(async (req, res) => {
+  const { senderId } = req.body;
+  const receiverId = req.user._id;
+
+  await MessageService.markMessagesAsSeen(senderId, receiverId);
 
   sendResponse({
     res,
     statusCode: httpStatus.OK,
     success: true,
-    message: "Single message retrieved successfully!",
+    message: "Messages marked as seen",
+  });
+});
+
+// ✅ New: deleteMessage function
+const deleteMessage = catchAsync(async (req, res) => {
+  const { messageId } = req.params;
+  const userId = req.user._id;
+
+  const result = await MessageService.deleteMessage(userId, messageId);
+
+  sendResponse({
+    res,
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Message deleted successfully",
     data: result,
   });
 });
 
-const updateSingleMessage = catchAsync(async (req, res) => {
-  const { id } = req.params;
-  const updateData = req.body;
-  const updateResult = await messageService.updateMessageIntoDB(id, updateData);
+const getAllConversations = catchAsync(async (req, res) => {
+  const adminId = req.user._id;
 
-  if (updateResult.modifiedCount === 1) {
-    const updatedMessage = await messageService.getSingleMessageFromDB(id);
+  const conversations = await MessageService.getAllConversations(adminId);
 
-    sendResponse({
-      res,
-      statusCode: httpStatus.OK,
-      success: true,
-      message: "Message updated successfully!",
-      data: updatedMessage,
-    });
-  } else {
-    sendResponse({
-      res,
-      statusCode: httpStatus.NOT_FOUND,
-      success: false,
-      message: "Message not found or data not modified",
-    });
-  }
+  sendResponse({
+    res,
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Conversations retrieved successfully",
+    data: conversations,
+  });
 });
 
-const deleteSingleMessage = catchAsync(async (req, res) => {
-  const { id } = req.params;
-  const deleteResult = await messageService.deleteMessageFromDB(id);
 
-  if (deleteResult.deletedCount === 1) {
-    sendResponse({
-      res,
-      statusCode: httpStatus.OK,
-      success: true,
-      message: "Message deleted successfully!",
-    });
-  } else {
-    sendResponse({
-      res,
-      statusCode: httpStatus.NOT_FOUND,
-      success: false,
-      message: "Message not found",
-    });
-  }
-});
-
-export const messageController = {
-  createMessageController,
-  getAllMessages,
-  getSingleMessage,
-  updateSingleMessage,
-  deleteSingleMessage,
+export const MessageController = {
+  sendMessage,
+  getMessages,
+  markAsSeen,
+  deleteMessage, // ✅ Exporting deleteMessage
+  getAllConversations
 };

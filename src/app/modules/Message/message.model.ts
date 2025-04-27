@@ -1,35 +1,16 @@
-import { model, Schema } from "mongoose";
-import { TMessage } from "./Message.interface";
+import { Schema, model, Types } from "mongoose";
+import { TMessage } from "./message.interface";
+
+
 
 const messageSchema = new Schema<TMessage>(
   {
-    sender: {
-      id: { type: String, required: true },
-      name: { type: String, required: true },
-      avatarUrl: { type: String },
-    },
-    receiver: {
-      id: { type: String, required: true },
-      name: { type: String, required: true },
-      avatarUrl: { type: String },
-    },
+    sender: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    receiver: { type: Schema.Types.ObjectId, ref: "User", required: true },
     content: { type: String, required: true },
-    messageType: {
-      type: String,
-      enum: ["text", "image", "video", "file"],
-      default: "text",
-    },
-    attachments: {
-      type: [String],
-    },
-    isRead: {
-      type: Boolean,
-      default: false,
-    },
+    isSeen: { type: Boolean, default: false },
   },
-  {
-    timestamps: true, // createdAt এবং updatedAt অটোমেটিক তৈরি হবে
-  }
+  { timestamps: true }
 );
 
 export const Message = model<TMessage>("Message", messageSchema);
