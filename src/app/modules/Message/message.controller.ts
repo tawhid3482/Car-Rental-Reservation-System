@@ -4,10 +4,10 @@ import { MessageService } from "./message.service";
 import httpStatus from "http-status";
 
 const sendMessage = catchAsync(async (req, res) => {
-  const { receiver, content } = req.body;
+  const { receiver, content, image } = req.body;
   const senderId = req.user._id;
 
-  const result = await MessageService.sendMessage(senderId, receiver, content);
+  const result = await MessageService.sendMessage(senderId, receiver, content, image);
 
   sendResponse({
     res,

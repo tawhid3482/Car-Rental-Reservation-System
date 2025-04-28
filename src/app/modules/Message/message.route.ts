@@ -13,7 +13,7 @@ router.post(
   validateRequest(messageValidation.createMessageValidationSchema),
   MessageController.sendMessage
 );
-router.get("/conversations", auth('admin'), MessageController.getAllConversations);
+router.get("/conversations", auth('admin','user'), MessageController.getAllConversations);
 
 router.get("/:otherUserId", auth('admin','user'),  MessageController.getMessages);
 

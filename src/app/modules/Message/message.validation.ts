@@ -13,6 +13,9 @@ const createMessageValidationSchema = z.object({
     content: z.string({
       required_error: "Content is required",
     }),
+    image: z.string({
+      required_error: "Content is required",
+    }),
     isSeen: z.boolean().optional(), // optional, because default model এ false দেওয়া
   }),
 });

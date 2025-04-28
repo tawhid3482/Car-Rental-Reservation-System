@@ -5,4 +5,5 @@ export type TMessage = {
   receiver: Types.ObjectId;
   content: string;
   isSeen: boolean;
+  image:string
 };

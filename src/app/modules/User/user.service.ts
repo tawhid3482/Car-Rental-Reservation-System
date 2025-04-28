@@ -14,9 +14,10 @@ const createUserIntoDB = async (payload: TUser) => {
   // Create token and send to the client
   const jwtPayload: JwtPayload = {
     id: result.id,
+    image:result.image,
     name: result.name,
     email: result.email,
-    role: result.role,
+    role: result.role
   };
 
   const accessToken = createToken(

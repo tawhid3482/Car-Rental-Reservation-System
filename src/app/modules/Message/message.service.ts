@@ -3,8 +3,8 @@ import httpStatus from "http-status";
 import { Message } from "./message.model"; 
 import AppError from "../../errors/AppError";
 
-const sendMessage = async (sender: string, receiver: string, content: string) => {
-  const newMessage = await Message.create({ sender: sender, receiver: receiver, content });
+const sendMessage = async (sender: string, receiver: string, content: string, image:string) => {
+  const newMessage = await Message.create({ sender: sender, receiver: receiver, content,image });
   return newMessage;
 };
 
@@ -45,8 +45,8 @@ const getAllConversations = async (adminId: string) => {
     $or: [{ sender: adminId }, { receiver: adminId }],
   })
     .sort({ createdAt: -1 })
-    .populate<{ sender: { _id: string; name: string; email: string }, receiver: { _id: string; name: string; email: string } }>("sender", "name email")
-    .populate("receiver", "name email");
+    .populate<{ sender: { _id: string; name: string; email: string; role:string; image:string }, receiver: { _id: string; name: string; email: string; role:string; image:string } }>("sender", "name email role")
+    .populate("receiver", "name email role");
 
   const conversations = messages.map((msg) => {
     const otherUser = msg.sender._id.toString() === adminId
