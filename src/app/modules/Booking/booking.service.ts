@@ -89,7 +89,7 @@ const getBookingsByUserCarFromDb = async (userId: string) => {
 const getBookingByEmail = async (email: string) => {
   // Find the user first
   // console.log(email)
-  
+
   const user = await UserModel.findOne({ email }).select("_id");
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, "User not found!");
@@ -104,9 +104,24 @@ const getBookingByEmail = async (email: string) => {
   return bookings;
 };
 
+const getBookingByIdFromDB = async (id: string, userId: string) => {
+  const user = await UserModel.findById(userId);
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found!");
+  }
+
+  const bookings = await Booking.findById(id)
+    .populate("car")
+    .populate({ path: "user", select: "-password" })
+    .lean(); // optional for better performance
+
+  return bookings;
+};
+
 export const BookingServices = {
   createBookingIntoDB,
   getBookingsByCarAndDate,
   getBookingsByUserCarFromDb,
   getBookingByEmail,
+  getBookingByIdFromDB,
 };

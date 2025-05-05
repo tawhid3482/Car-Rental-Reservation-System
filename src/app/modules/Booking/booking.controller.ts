@@ -56,11 +56,26 @@ const getBookingsUser = catchAsync(async (req, res) => {
     data: result,
   });
 });
+const getBookingsById = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user._id;
+  // console.log(userId)
+  const result = await BookingServices.getBookingByIdFromDB(id,userId);
+  
+  sendResponse({
+    res,
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "My Bookings retrieved successfully",
+    data: result,
+  });
+});
 
 export const BookingController = {
   createBookingController,
   getBookingsByCarAndDateController,
   getBookingsByUserCar,
-  getBookingsUser
+  getBookingsUser,
+  getBookingsById
   // returnCarController
 };
