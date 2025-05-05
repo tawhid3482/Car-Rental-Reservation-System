@@ -1,7 +1,6 @@
 import { model, Schema } from "mongoose";
 import { IPayment } from "./payment.interface";
 
-// TypeScript বা Mongoose Schema অনুযায়ী
 const PaymentSchema = new Schema<IPayment>({
     userId: {
       type: Schema.Types.ObjectId,
