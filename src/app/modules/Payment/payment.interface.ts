@@ -14,6 +14,5 @@ export interface IPayment {
   paymentMethod: 'sslcommerz' | 'stripe' | 'paypal' ;
   transactionId: string;
   status?: TPaymentStatus; // default: 'pending'
-  paymentTime?: string | Date;
   gatewayResponse?: IGatewayResponse;
 }

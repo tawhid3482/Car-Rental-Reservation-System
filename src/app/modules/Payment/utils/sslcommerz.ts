@@ -12,7 +12,7 @@ export const initiateSSLCommerzPayment = async (paymentData: any) => {
     success_url: paymentData.success_url,
     fail_url: paymentData.fail_url,
     cancel_url: paymentData.cancel_url,
-    currency: "BDT",
+    currency: "USD",
     tran_id: paymentData.transactionId,
   };
 

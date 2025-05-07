@@ -3,18 +3,16 @@ import express from "express";
 import validateRequest from "../../middlewares/validationRequest";
 import { paymentValidation } from "./payment.validation";
 import { PaymentControllers } from "./payment.controller";
+import auth from "../../middlewares/auth";
 
 const router = express.Router();
 
 router.post(
   "/",
+  auth("user"),
   validateRequest(paymentValidation.createPaymentZodSchema),
   PaymentControllers.createPayment
 );
-router.post("/initiate", PaymentControllers.initiatePayment);
-
-
-router.get("/", PaymentControllers.getAllPayments);
-router.get("/:id", PaymentControllers.getPaymentById);
+router.post("/initiate", auth("user"), PaymentControllers.initiatePayment);
 
 export const PaymentRoutes = router;
