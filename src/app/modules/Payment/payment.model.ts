@@ -10,7 +10,7 @@ const PaymentSchema = new Schema<IPayment>(
     },
     orderId: {
       type: Schema.Types.ObjectId,
-      ref: "Order",
+      ref: "Booking",
       required: true,
     },
     amount: {

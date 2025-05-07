@@ -36,8 +36,7 @@ const deleteSingleCarFromDB = async (id: string) => {
 };
 
 const returnTheCarIntoDB = async (bookingId: string, endTime: string) => {
-  const isBookingExists = await Booking.findById(bookingId)
-    .populate("car");
+  const isBookingExists = await Booking.findById(bookingId).populate("car");
 
   if (!isBookingExists) {
     throw new AppError(httpStatus.NOT_FOUND, "Booking is not found !");
@@ -56,19 +55,19 @@ const returnTheCarIntoDB = async (bookingId: string, endTime: string) => {
     throw new AppError(httpStatus.NOT_FOUND, "Car is not found !");
   }
   if (isBookingExists.endTime) {
-        throw new AppError(
-          httpStatus.BAD_REQUEST,
-          "Car has already been returned!"
-        );
-      }
-  
-  const startHours = convertTime(isBookingExists.startTime);
-  const endHours = convertTime(endTime);
-  let durationHours = endHours - startHours;
-  if (durationHours < 0) {
-    durationHours += 24;
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Car has already been returned!"
+    );
   }
-  const totalCost = Number(durationHours) * Number(isCarExists.pricePerHour);
+
+  const startTime = `${isBookingExists.date} ${isBookingExists.startTime}`;
+  const startDate = new Date(startTime);
+  const endDate = new Date(endTime);
+  const timeDifference = endDate.getTime() - startDate.getTime();
+  const hoursSpent = timeDifference / (1000 * 60 * 60);
+  const totalCost = (hoursSpent * isCarExists.pricePerHour).toFixed(2);
+
   const updatedBooking = await Booking.findByIdAndUpdate(
     bookingId,
     {
@@ -78,10 +77,11 @@ const returnTheCarIntoDB = async (bookingId: string, endTime: string) => {
     {
       new: true,
     }
-  ).populate("car").populate({path:"user",select:'-password'});
+  )
+    .populate("car")
+    .populate({ path: "user", select: "-password" });
   return updatedBooking;
 };
-
 
 export const carServices = {
   createCarIntoDB,
@@ -90,5 +90,5 @@ export const carServices = {
   updateCarIntoDB,
   deleteSingleCarFromDB,
   returnTheCarIntoDB,
-  updateCarLoveIntoDB
+  updateCarLoveIntoDB,
 };

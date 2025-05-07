@@ -115,14 +115,9 @@ const deleteSingleCar = catchAsync(async (req, res) => {
 });
 
 const returnCarController = catchAsync(async (req, res) => {
-  const {bookingId,endTime} = req.body;
+  const { bookingId, endTime } = req.body;
 
-  // Validate endTime again in the controller
-  if (!/^([01]\d|2[0-3]):([0-5]\d)$/.test(endTime)) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Invalid time format!");
-  }
-
-  const result = await carServices.returnTheCarIntoDB(bookingId,endTime);
+  const result = await carServices.returnTheCarIntoDB(bookingId, endTime);
   sendResponse({
     res,
     success: true,
@@ -177,5 +172,5 @@ export const carController = {
   updateSingleCar,
   deleteSingleCar,
   returnCarController,
-  updateSingleCarLove
+  updateSingleCarLove,
 };

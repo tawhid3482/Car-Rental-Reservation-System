@@ -15,4 +15,10 @@ router.post(
 );
 router.post("/initiate", auth("user"), PaymentControllers.initiatePayment);
 
+router.get("/", 
+  // auth("user",'admin'),
+   PaymentControllers.getAllPayments);
+   
+router.get("/:email", auth("user"), PaymentControllers.getAllPaymentsByEmail);
+
 export const PaymentRoutes = router;

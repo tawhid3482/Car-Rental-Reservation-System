@@ -60,9 +60,36 @@ const initiatePayment = catchAsync(async (req, res) => {
   });
 });
 
+const getAllPayments = catchAsync(async (req, res) => {
+  const result = await PaymentServices.getAllPaymentsFromDB();
+  sendResponse({
+    res,
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: "Payment retrieved successfully",
+    data: result,
+  });
+});
+
+const getAllPaymentsByEmail = catchAsync(async (req, res) => {
+  const { email } = req.params;
+  if (!email) {
+    throw new AppError(httpStatus.BAD_REQUEST, "User is not  found");
+  }
+  
+  const result = await PaymentServices.getAllPaymentsByEmail(email);
+  sendResponse({
+    res,
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: "Payment retrieved successfully",
+    data: result,
+  });
+});
+
 export const PaymentControllers = {
   createPayment,
-  // getAllPayments,
-  // getPaymentById,
+  getAllPayments,
   initiatePayment,
+  getAllPaymentsByEmail,
 };
