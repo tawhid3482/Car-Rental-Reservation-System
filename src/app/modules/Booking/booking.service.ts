@@ -87,8 +87,6 @@ const getBookingsByUserCarFromDb = async (userId: string) => {
 
 // BookingService.ts
 const getBookingByEmail = async (email: string) => {
-  // Find the user first
-  // console.log(email)
 
   const user = await UserModel.findOne({ email }).select("_id");
   if (!user) {
@@ -97,6 +95,7 @@ const getBookingByEmail = async (email: string) => {
 
   // Then find all bookings of that user
   const bookings = await Booking.find({ user: user._id })
+    .sort({ date: -1 }) // Sort by date in descending order
     .populate("car")
     .populate({ path: "user", select: "-password" })
     .lean(); // optional for better performance

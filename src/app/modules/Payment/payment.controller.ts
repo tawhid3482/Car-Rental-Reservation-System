@@ -24,31 +24,41 @@ const initiatePayment = catchAsync(async (req, res) => {
     throw new AppError(httpStatus.UNAUTHORIZED, "Unauthorized user");
   }
 
-  const { paymentMethod, amount, transactionId } = req.body;
+  const {
+    paymentMethod,
+    amount,
+    transactionId,
+    success_url,
+    fail_url,
+    cancel_url,
+  } = req.body;
+  // console.log(req.body);
 
   let result;
-
   if (paymentMethod === "sslcommerz") {
-    result = await initiateSSLCommerzPayment({
+    const paymentData = {
       total_amount: amount,
       transactionId,
-      success_url: "http://localhost:3000/payment/success",
-      fail_url: "http://localhost:3000/payment/fail",
-      cancel_url: "http://localhost:3000/payment/cancel",
+      success_url: `${success_url}`,
+      fail_url: `${fail_url}`,
+      cancel_url: `${cancel_url}`,
       cus_email: email,
       cus_name: "Customer",
-      cus_add1: "Dhaka",
-      cus_phone: "01711111111",
-    });
+      cus_add1: "",
+      cus_phone: "",
+    };
+
+    result = await initiateSSLCommerzPayment(paymentData);
+    console.log(result);
   }
 
   if (paymentMethod === "stripe") {
     const intent = await createStripePaymentIntent(amount);
     result = { clientSecret: intent.client_secret };
   }
-
   if (paymentMethod === "paypal") {
     result = await createPayPalPayment(amount);
+    console.log(result);
   }
 
   sendResponse({
@@ -56,6 +66,18 @@ const initiatePayment = catchAsync(async (req, res) => {
     statusCode: httpStatus.OK,
     success: true,
     message: "Payment initiated",
+    data: result,
+  });
+});
+
+const paymentSuccess = catchAsync(async (req, res) => {
+  const result = await PaymentServices.paymentSuccessHandler(req.body, res);
+
+  sendResponse({
+    res,
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Payment successful",
     data: result,
   });
 });
@@ -76,7 +98,7 @@ const getAllPaymentsByEmail = catchAsync(async (req, res) => {
   if (!email) {
     throw new AppError(httpStatus.BAD_REQUEST, "User is not  found");
   }
-  
+
   const result = await PaymentServices.getAllPaymentsByEmail(email);
   sendResponse({
     res,
@@ -87,9 +109,38 @@ const getAllPaymentsByEmail = catchAsync(async (req, res) => {
   });
 });
 
+const sslcommerzSuccess = catchAsync(async (req, res) => {
+  const { transactionId } = req.params;
+
+  // Optional: Save payment status in DB
+  await PaymentServices.markPaymentAsPaid(transactionId);
+
+  // Redirect user to frontend
+  res.redirect(`${process.env.CLIENT_URL}/dashboard/payment-history`);
+});
+
+const sslcommerzFail = catchAsync(async (req, res) => {
+  const { transactionId } = req.params;
+
+  // Optional: Save failure status in DB
+  await PaymentServices.markPaymentAsFailed(transactionId);
+
+  res.redirect(`${process.env.CLIENT_URL}/dashboard/payment/failed`);
+});
+
+const sslcommerzCancel = catchAsync(async (req, res) => {
+  const { transactionId } = req.params;
+
+  res.redirect(`${process.env.CLIENT_URL}/dashboard/my-booking`);
+});
+
 export const PaymentControllers = {
   createPayment,
   getAllPayments,
   initiatePayment,
   getAllPaymentsByEmail,
+  sslcommerzSuccess,
+  sslcommerzFail,
+  sslcommerzCancel,
+  paymentSuccess,
 };
