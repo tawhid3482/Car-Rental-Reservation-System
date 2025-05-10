@@ -1,12 +1,16 @@
-import dotenv from 'dotenv';
-import path from 'path';
+import dotenv from "dotenv";
+import path from "path";
 
-dotenv.config({ path: path.join((process.cwd(), '.env')) });
+dotenv.config({ path: path.join((process.cwd(), ".env")) });
 
 export default {
   NODE_ENV: process.env.NODE_ENV,
   port: process.env.PORT,
   database_url: process.env.DATABASE_URL,
+  CLIENT_URL: process.env.CLIENT_URL,
+  CLIENT_CANCEL_URL: process.env.CLIENT_CANCEL_URL,
+  CLIENT_FAIL_URL: process.env.CLIENT_FAIL_URL,
+  CLIENT_SUCCESS_REDIRECT_URL: process.env.CLIENT_SUCCESS_REDIRECT_URL,
   bcrypt_salt_rounds: process.env.BCRYPT_SALT_ROUNDS,
   default_password: process.env.DEFAULT_PASS,
   jwt_access_secret: process.env.JWT_ACCESS_SECRET,
@@ -17,4 +21,3 @@ export default {
   SSLCOMMERZ_STORE_ID: process.env.SSLCOMMERZ_STORE_ID,
   SSLCOMMERZ_STORE_PASSWORD: process.env.SSLCOMMERZ_STORE_PASSWORD,
 };
-

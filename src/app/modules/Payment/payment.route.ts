@@ -18,18 +18,10 @@ router.post("/initiate", auth("user"), PaymentControllers.initiatePayment);
 
 router.post("/success-payment", PaymentControllers.paymentSuccess);
 
+router.post("/ipn-success-payment", PaymentControllers.ipnSuccessHandler); // ✅ IPN Route added
 
+router.get("/", PaymentControllers.getAllPayments);
 
-router.get("/", 
-  // auth("user",'admin'),
-   PaymentControllers.getAllPayments);
-   
 router.get("/:email", auth("user"), PaymentControllers.getAllPaymentsByEmail);
-
-
-router.get("/success/:transactionId", PaymentControllers.sslcommerzSuccess);
-router.get("/fail/:transactionId", PaymentControllers.sslcommerzFail);
-router.get("/cancel/:transactionId", PaymentControllers.sslcommerzCancel);
-
 
 export const PaymentRoutes = router;

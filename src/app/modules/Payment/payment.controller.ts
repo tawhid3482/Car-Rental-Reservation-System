@@ -1,11 +1,11 @@
+// controllers/payment.controller.ts
 import httpStatus from "http-status";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
-import { createStripePaymentIntent } from "./utils/stripe";
-import { createPayPalPayment } from "./utils/paypal";
-import { initiateSSLCommerzPayment } from "./utils/sslcommerz";
 import { PaymentServices } from "./payment.service";
 import AppError from "../../errors/AppError";
+import { createStripePaymentIntent } from "./utils/stripe";
+import { createPayPalPayment } from "./utils/paypal";
 
 const createPayment = catchAsync(async (req, res) => {
   const result = await PaymentServices.createPaymentIntoDB(req.body);
@@ -14,6 +14,28 @@ const createPayment = catchAsync(async (req, res) => {
     statusCode: httpStatus.CREATED,
     success: true,
     message: "Payment created successfully",
+    data: result,
+  });
+});
+
+const paymentSuccess = catchAsync(async (req, res) => {
+  const result = await PaymentServices.paymentSuccessHandler(req.body, res);
+  sendResponse({
+    res,
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Payment successful",
+    data: result,
+  });
+});
+
+const ipnSuccessHandler = catchAsync(async (req, res) => {
+  const result = await PaymentServices.ipnSuccessHandler(req.body);
+  sendResponse({
+    res,
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "IPN payment update received",
     data: result,
   });
 });
@@ -32,33 +54,19 @@ const initiatePayment = catchAsync(async (req, res) => {
     fail_url,
     cancel_url,
   } = req.body;
-  // console.log(req.body);
 
   let result;
-  if (paymentMethod === "sslcommerz") {
-    const paymentData = {
-      total_amount: amount,
-      transactionId,
-      success_url: `${success_url}`,
-      fail_url: `${fail_url}`,
-      cancel_url: `${cancel_url}`,
-      cus_email: email,
-      cus_name: "Customer",
-      cus_add1: "",
-      cus_phone: "",
-    };
-
-    result = await initiateSSLCommerzPayment(paymentData);
-    console.log(result);
-  }
 
   if (paymentMethod === "stripe") {
     const intent = await createStripePaymentIntent(amount);
     result = { clientSecret: intent.client_secret };
-  }
-  if (paymentMethod === "paypal") {
+  } else if (paymentMethod === "paypal") {
     result = await createPayPalPayment(amount);
-    console.log(result);
+  } else if (paymentMethod === "sslcommerz") {
+    result = await PaymentServices.createPaymentIntoDB({
+      ...req.body,
+      email,
+    });
   }
 
   sendResponse({
@@ -70,25 +78,13 @@ const initiatePayment = catchAsync(async (req, res) => {
   });
 });
 
-const paymentSuccess = catchAsync(async (req, res) => {
-  const result = await PaymentServices.paymentSuccessHandler(req.body, res);
-
-  sendResponse({
-    res,
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "Payment successful",
-    data: result,
-  });
-});
-
 const getAllPayments = catchAsync(async (req, res) => {
   const result = await PaymentServices.getAllPaymentsFromDB();
   sendResponse({
     res,
-    statusCode: httpStatus.CREATED,
+    statusCode: httpStatus.OK,
     success: true,
-    message: "Payment retrieved successfully",
+    message: "Payments retrieved successfully",
     data: result,
   });
 });
@@ -96,42 +92,17 @@ const getAllPayments = catchAsync(async (req, res) => {
 const getAllPaymentsByEmail = catchAsync(async (req, res) => {
   const { email } = req.params;
   if (!email) {
-    throw new AppError(httpStatus.BAD_REQUEST, "User is not  found");
+    throw new AppError(httpStatus.BAD_REQUEST, "User not found");
   }
 
   const result = await PaymentServices.getAllPaymentsByEmail(email);
   sendResponse({
     res,
-    statusCode: httpStatus.CREATED,
+    statusCode: httpStatus.OK,
     success: true,
-    message: "Payment retrieved successfully",
+    message: "Payments retrieved successfully",
     data: result,
   });
-});
-
-const sslcommerzSuccess = catchAsync(async (req, res) => {
-  const { transactionId } = req.params;
-
-  // Optional: Save payment status in DB
-  await PaymentServices.markPaymentAsPaid(transactionId);
-
-  // Redirect user to frontend
-  res.redirect(`${process.env.CLIENT_URL}/dashboard/payment-history`);
-});
-
-const sslcommerzFail = catchAsync(async (req, res) => {
-  const { transactionId } = req.params;
-
-  // Optional: Save failure status in DB
-  await PaymentServices.markPaymentAsFailed(transactionId);
-
-  res.redirect(`${process.env.CLIENT_URL}/dashboard/payment/failed`);
-});
-
-const sslcommerzCancel = catchAsync(async (req, res) => {
-  const { transactionId } = req.params;
-
-  res.redirect(`${process.env.CLIENT_URL}/dashboard/my-booking`);
 });
 
 export const PaymentControllers = {
@@ -139,8 +110,6 @@ export const PaymentControllers = {
   getAllPayments,
   initiatePayment,
   getAllPaymentsByEmail,
-  sslcommerzSuccess,
-  sslcommerzFail,
-  sslcommerzCancel,
   paymentSuccess,
+  ipnSuccessHandler,
 };
