@@ -19,6 +19,7 @@ router.get(
   // auth("admin"),
   BookingController.getBookingsByCarAndDateController
 );
+router.get("/", auth("admin"), BookingController.getAllBookings);
 
 router.get(
   "/my-bookings",
@@ -26,15 +27,11 @@ router.get(
   BookingController.getBookingsByUserCar
 );
 
-router.get(
-  "/my-bookings/:email",
-  BookingController.getBookingsUser
-);
+router.get("/my-bookings/:email", BookingController.getBookingsUser);
 router.get(
   "/my-bookings/id/:id",
-  auth('user'),
+  auth("user"),
   BookingController.getBookingsById
 );
-
 
 export const BookingRoutes = router;

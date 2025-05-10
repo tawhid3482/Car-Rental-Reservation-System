@@ -7,4 +7,5 @@ export type TBooking = {
   startTime: string;
   endTime: string;
   totalCost?: number | undefined;
+  createdAt?: Date; // Add createdAt field
 };

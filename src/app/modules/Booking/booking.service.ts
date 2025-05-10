@@ -102,6 +102,16 @@ const getBookingByEmail = async (email: string) => {
 
   return bookings;
 };
+const getAllBookingFromDB = async () => {
+
+  const bookings = await Booking.find()
+    .sort({ date: -1 }) // Sort by date in descending order
+    .populate("car")
+    .populate({ path: "user", select: "-password" })
+    .lean(); // optional for better performance
+
+  return bookings;
+};
 
 const getBookingByIdFromDB = async (id: string, userId: string) => {
   const user = await UserModel.findById(userId);
@@ -123,4 +133,5 @@ export const BookingServices = {
   getBookingsByUserCarFromDb,
   getBookingByEmail,
   getBookingByIdFromDB,
+  getAllBookingFromDB,
 };
