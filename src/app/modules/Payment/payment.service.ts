@@ -50,7 +50,6 @@ const createPaymentIntoDB = async (payload: any) => {
       status: "pending",
       currency: "BDT",
     });
-    console.log("SSLCommerz response:", response.GatewayPageURL);
     return response.GatewayPageURL;
   } else {
     throw new Error("GatewayPageURL not found in SSLCommerz response");

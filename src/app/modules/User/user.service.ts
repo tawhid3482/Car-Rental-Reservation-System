@@ -56,7 +56,6 @@ const updateUserByEmailIntoDB = async (email: string, payload: TUser) => {
   if (!isUserExits) {
     throw new AppError(httpStatus.BAD_REQUEST, "User not Found!");
   }
-  console.log(email, payload);
   const updatedUser = await UserModel.findOneAndUpdate(
     { email },
     { $set: payload },

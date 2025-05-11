@@ -11,7 +11,6 @@ class QueryBuilder<T> {
 
   filter() {
     const { carId, date, ...restQuery } = this.query;
-    console.log(carId)
 
     // Filtering by carId and date if provided
     if (carId) {

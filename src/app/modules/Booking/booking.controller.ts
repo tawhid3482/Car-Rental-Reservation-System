@@ -70,7 +70,6 @@ const getAllBookings = catchAsync(async (req, res) => {
 const getBookingsById = catchAsync(async (req, res) => {
   const { id } = req.params;
   const userId = req.user._id;
-  // console.log(userId)
   const result = await BookingServices.getBookingByIdFromDB(id,userId);
   
   sendResponse({

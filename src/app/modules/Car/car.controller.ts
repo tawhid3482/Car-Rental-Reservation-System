@@ -92,7 +92,6 @@ const updateSingleCarLove = catchAsync(async (req, res) => {
 
 const deleteSingleCar = catchAsync(async (req, res) => {
   const { id } = req.params;
-  console.log(id)
   const deleteResult = await carServices.deleteSingleCarFromDB(id);
 
   if (deleteResult.modifiedCount === 1) {
