@@ -10,7 +10,7 @@ const createCarIntoDB = async (payload: TCar) => {
   return result;
 };
 const getAllCarFromDB = async () => {
-  const result = await CarModel.find();
+  const result = await CarModel.find({ isDeleted: { $ne: true } });
   return result;
 };
 const getSingleCarFromDB = async (id: string) => {
@@ -28,6 +28,10 @@ const updateCarLoveIntoDB = async (id: string, updateData: Partial<TCar>) => {
 };
 
 const deleteSingleCarFromDB = async (id: string) => {
+  const isCarExists = await CarModel.findById(id);
+  if (!isCarExists) {
+    throw new AppError(httpStatus.NOT_FOUND, "Car is not found !");
+  }
   const result = await CarModel.updateOne(
     { _id: id },
     { $set: { isDeleted: true } }

@@ -18,7 +18,7 @@ router.get("/:id", carController.getSingleCars);
 
 router.put(
   "/return",
-  // auth("admin"),
+  auth("admin","user"),
   validateRequest(carValidation.returnCarValidationSchema),
   carController.returnCarController
 );
