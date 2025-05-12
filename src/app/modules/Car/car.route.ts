@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.post(
   "/",
-  auth("admin"),
+  auth("admin", "super-admin"),
   validateRequest(carValidation.createCarValidationSchema),
   carController.createCarController
 );
@@ -18,14 +18,14 @@ router.get("/:id", carController.getSingleCars);
 
 router.put(
   "/return",
-  auth("admin","user"),
+  auth("user", "admin", "super-admin"),
   validateRequest(carValidation.returnCarValidationSchema),
   carController.returnCarController
 );
 
 router.put(
   "/:id",
-  // auth("admin"),
+  auth("admin", "super-admin"),
   validateRequest(carValidation.updateCarValidationSchema),
   carController.updateSingleCar
 );
@@ -35,8 +35,10 @@ router.put(
   carController.updateSingleCarLove
 );
 
-router.delete("/:id",
-   auth("admin"),
-    carController.deleteSingleCar);
+router.delete(
+  "/:id",
+  auth("admin", "super-admin"),
+  carController.deleteSingleCar
+);
 
 export const CarRoutes = router;

@@ -20,7 +20,11 @@ router.post("/success-payment", PaymentControllers.paymentSuccess);
 
 router.post("/ipn-success-payment", PaymentControllers.ipnSuccessHandler); // ✅ IPN Route added
 
-router.get("/", PaymentControllers.getAllPayments);
+router.get(
+  "/",
+  auth( "admin", "super-admin"),
+  PaymentControllers.getAllPayments
+);
 
 router.get("/:email", auth("user"), PaymentControllers.getAllPaymentsByEmail);
 

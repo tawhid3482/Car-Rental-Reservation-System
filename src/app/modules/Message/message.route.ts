@@ -9,16 +9,21 @@ const router = express.Router();
 
 router.post(
   "/",
-  auth('admin','user'),
+  auth("admin", "user"),
   validateRequest(messageValidation.createMessageValidationSchema),
   MessageController.sendMessage
 );
-router.get("/conversations", auth('admin','user'), MessageController.getAllConversations);
+router.get(
+  "/conversations",
+  auth("admin", "user"),
+  MessageController.getAllConversations
+);
 
-router.get("/:otherUserId", auth('admin','user'),  MessageController.getMessages);
-
-
-
+router.get(
+  "/:otherUserId",
+  auth("admin", "user"),
+  MessageController.getMessages
+);
 
 router.patch(
   "/seen",
@@ -27,6 +32,10 @@ router.patch(
 );
 
 // ✅ Delete Route
-router.delete("/:messageId", MessageController.deleteMessage);
+router.delete(
+  "/:messageId",
+  auth("user", "admin", "super-admin"),
+  MessageController.deleteMessage
+);
 
 export const MessageRoutes = router;

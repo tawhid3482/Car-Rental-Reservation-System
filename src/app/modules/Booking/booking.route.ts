@@ -10,7 +10,7 @@ const router = Router();
 
 router.post(
   "/",
-  auth("user"),
+  auth("user", "admin", "super-admin"),
   validateRequest(validationSchema.createBookingValidationSchema),
   BookingController.createBookingController
 );
@@ -27,10 +27,10 @@ router.get(
   BookingController.getBookingsByUserCar
 );
 
-router.get("/my-bookings/:email", BookingController.getBookingsUser);
+router.get("/my-bookings/:email",auth("user", "admin", "super-admin"), BookingController.getBookingsUser);
 router.get(
   "/my-bookings/id/:id",
-  auth("user"),
+  auth("user", "admin", "super-admin"),
   BookingController.getBookingsById
 );
 
